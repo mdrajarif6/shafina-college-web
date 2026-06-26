@@ -24,7 +24,9 @@ import {
   Sparkles,
   ArrowRight,
   BookMarked,
-  BookOpen
+  BookOpen,
+  Menu,
+  X
 } from "lucide-react";
 
 import {
@@ -120,6 +122,7 @@ export default function App() {
 
   // Navigation Active Section State
   const [activeTab, setActiveTab] = useState<string>(() => localStorage.getItem('activeTab') || 'home');
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   React.useEffect(() => {
     localStorage.setItem('isAuthenticated', String(isAuthenticated));
@@ -644,9 +647,21 @@ export default function App() {
         </div>
 
         {/* NAVIGATION LINKS CONTAINER */}
-        <nav className="bg-white border-t border-slate-100 mt-4">
+        <nav className="bg-white border-t border-slate-100 mt-4 relative z-40">
           <div className="max-w-7xl mx-auto px-4">
-            <div className="flex flex-wrap justify-center md:justify-start gap-1 py-1">
+            
+            {/* Mobile Menu Toggle */}
+            <div className="md:hidden flex justify-between items-center py-2">
+              <span className="text-sm font-bold text-slate-600">{lang === "EN" ? "Main Menu" : "মূল মেনু"}</span>
+              <button 
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                className="p-2 bg-slate-100 rounded-lg text-slate-600 hover:bg-rose-50 hover:text-rose-600 transition-colors"
+              >
+                {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              </button>
+            </div>
+
+            <div className={`${isMobileMenuOpen ? "flex" : "hidden"} md:flex flex-col md:flex-row flex-wrap justify-center md:justify-start gap-1 py-2 md:py-1`}>
               {[
                 { id: "home", label: t.navHome },
                 { id: "about", label: t.navAbout },
@@ -662,13 +677,14 @@ export default function App() {
                   key={tab.id}
                   onClick={() => {
                     setActiveTab(tab.id);
+                    setIsMobileMenuOpen(false);
                     document.getElementById(`${tab.id}-section`)?.scrollIntoView({ behavior: "smooth" });
                   }}
-                  className={`px-3 py-2 text-xs md:text-sm font-semibold rounded-lg transition-all cursor-pointer ${
+                  className={`w-full md:w-auto text-left md:text-center px-4 md:px-3 py-3 md:py-2 text-sm font-semibold rounded-lg transition-all cursor-pointer ${
                     activeTab === tab.id
-                      ? "bg-rose-50 text-rose-700 border-b-2 border-rose-600"
+                      ? "bg-rose-50 text-rose-700 border-l-4 md:border-l-0 md:border-b-2 border-rose-600"
                       : tab.id === "dashboard"
-                      ? "bg-slate-900 text-white hover:bg-slate-800 shadow-sm"
+                      ? "bg-slate-900 text-white hover:bg-slate-800 shadow-sm mt-2 md:mt-0"
                       : "text-slate-600 hover:bg-slate-50 hover:text-rose-600"
                   }`}
                 >
@@ -677,15 +693,16 @@ export default function App() {
               ))}
 
               {/* Portals Dropdown */}
-              <div className="relative group ml-1">
-                <button className="px-3 py-2 text-xs md:text-sm font-semibold rounded-lg transition-all cursor-pointer text-slate-600 hover:bg-slate-50 hover:text-indigo-600 flex items-center gap-1">
+              <div className="relative group ml-0 md:ml-1 mt-2 md:mt-0 w-full md:w-auto">
+                <button className="w-full md:w-auto justify-between px-4 md:px-3 py-3 md:py-2 text-sm font-semibold rounded-lg transition-all cursor-pointer text-slate-600 hover:bg-slate-50 hover:text-indigo-600 flex items-center gap-1 border border-slate-200 md:border-none">
                   {lang === "EN" ? "Portals" : "পোর্টাল"}
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
                 </button>
-                <div className="absolute top-full right-0 md:left-0 mt-1 w-48 bg-white rounded-xl shadow-xl border border-slate-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50 overflow-hidden">
+                <div className="absolute top-full right-0 left-0 md:left-0 mt-1 w-full md:w-48 bg-white rounded-xl shadow-xl border border-slate-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50 overflow-hidden">
                   <button
                     onClick={() => {
                       setActiveTab("student_portal");
+                      setIsMobileMenuOpen(false);
                       window.scrollTo({ top: 0, behavior: "smooth" });
                     }}
                     className="w-full text-left px-4 py-3 text-sm font-semibold text-slate-600 hover:bg-indigo-50 hover:text-indigo-700 border-b border-slate-50 flex items-center gap-2"
@@ -695,6 +712,7 @@ export default function App() {
                   <button
                     onClick={() => {
                       setActiveTab("teacher_portal");
+                      setIsMobileMenuOpen(false);
                       window.scrollTo({ top: 0, behavior: "smooth" });
                     }}
                     className="w-full text-left px-4 py-3 text-sm font-semibold text-slate-600 hover:bg-rose-50 hover:text-rose-700 flex items-center gap-2"
