@@ -28,7 +28,7 @@ import {
   X
 } from "lucide-react";
 
-import apkVersion from "../apk-version.json";
+
 import {
   contentEN,
   contentBN,
@@ -47,10 +47,13 @@ import { Student } from "./components/Dashboard/Students";
 import { AttendanceRecord } from "./components/Dashboard/Attendance";
 import { StudentPortal } from "./components/StudentPortal/StudentPortal";
 import { TeacherPortal } from "./components/TeacherPortal/TeacherPortal";
+import DownloadModal from "./components/DownloadModal";
+
 export default function App() {
   // Language State
   const [lang, setLang] = useState<"EN" | "BN">("BN"); // Default to BN (Bengali) for authentic feel, can toggle to EN
   const t: CollegeTranslation = lang === "EN" ? contentEN : contentBN;
+  const [isDownloadModalOpen, setIsDownloadModalOpen] = useState(false);
 
   const handleInstallClick = async () => {
     // Detect iOS devices (iPhone, iPad, iPod)
@@ -60,11 +63,8 @@ export default function App() {
       // iOS users cannot install APKs, so we must rely on PWA instructions
       alert(lang === "EN" ? "To install on iOS: tap the Share button (square with an arrow pointing up) at the bottom of your screen, then select 'Add to Home Screen'." : "iOS এ ইন্সটল করতে: স্ক্রিনের নিচে Share বাটনে ট্যাপ করুন এবং 'Add to Home Screen' নির্বাচন করুন।");
     } else {
-      // For Android and Desktop, trigger the direct APK download!
-      const a = document.createElement('a');
-      a.href = `/${apkVersion.filename}`;
-      a.download = apkVersion.filename;
-      a.click();
+      // For Android and Desktop, open the GitHub Releases Modal!
+      setIsDownloadModalOpen(true);
     }
   };
 
@@ -544,6 +544,11 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-800 font-bilingual flex flex-col selection:bg-rose-600 selection:text-white">
+      <DownloadModal 
+        isOpen={isDownloadModalOpen} 
+        onClose={() => setIsDownloadModalOpen(false)} 
+        lang={lang} 
+      />
       
       {/* TOP SCROLLING TICKER */}
       <div className="bg-rose-950 text-white py-2 text-xs md:text-sm border-b border-rose-900/50 relative overflow-hidden z-20">
