@@ -33,7 +33,8 @@ jobs:
         password: ${{ secrets.FTP_PASSWORD }}
         local-dir: ./dist/
         server-dir: ./public_html/
-        danger-clean-server: false
+        protocol: ftp
+        port: 21
 
     - name: 📂 Sync PHP API to cPanel FTP
       uses: SamKirkland/FTP-Deploy-Action@v4.3.5
@@ -43,4 +44,5 @@ jobs:
         password: ${{ secrets.FTP_PASSWORD }}
         local-dir: ./api/
         server-dir: ./public_html/api/
-        danger-clean-server: false
+        protocol: ftp
+        port: 21
