@@ -25,11 +25,6 @@ jobs:
     - name: 🏗️ Build Project
       run: npm run build
       
-    - name: 🔍 Debug FTP Directory
-      run: |
-        sudo apt-get install lftp -y
-        lftp -c "open -u ${{ secrets.FTP_USERNAME }},${{ secrets.FTP_PASSWORD }} ftp://${{ secrets.FTP_SERVER }}; ls -la; pwd"
-
     - name: 📂 Sync files to cPanel FTP
       uses: SamKirkland/FTP-Deploy-Action@v4.3.5
       with:
@@ -38,8 +33,9 @@ jobs:
         password: ${{ secrets.FTP_PASSWORD }}
         local-dir: ./dist/
         server-dir: ./dist/
-        protocol: ftp
+        protocol: ftps
         port: 21
+        dangerous-clean-slate: true
 
     - name: 📂 Sync PHP API to cPanel FTP
       uses: SamKirkland/FTP-Deploy-Action@v4.3.5
@@ -49,5 +45,5 @@ jobs:
         password: ${{ secrets.FTP_PASSWORD }}
         local-dir: ./api/
         server-dir: ./api/
-        protocol: ftp
+        protocol: ftps
         port: 21
