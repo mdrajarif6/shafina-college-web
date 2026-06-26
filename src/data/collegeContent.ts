@@ -224,43 +224,111 @@ export const contentBN: CollegeTranslation = {
   resultNotFound: "ফলাফল পাওয়া যায়নি অথবা API কাজ করছে না।",
 };
 
+
+export const contentAR: CollegeTranslation = {
+  navHome: 'الرئيسية',
+  navAbout: 'معلومات عنا',
+  navPrograms: 'البرامج الأكاديمية',
+  navAdmission: 'بوابة القبول',
+  navNotices: 'لوحة الإعلانات',
+  navCampusMap: 'خريطة الحرم الجامعي',
+  navGallery: 'معرض الصور',
+  navContact: 'اتصل بنا',
+  languageLabel: 'العربية',
+  collegeName: 'كلية الحاج جمير الدين شافينا للدرجات العلمية للبنات',
+  collegeNameShort: 'كلية شافينا للبنات',
+  collegeSubtitle: 'تمكين المرأة من خلال التعليم الجيد والنزاهة الأخلاقية والقيادة الأكاديمية',
+  eiin: '127037',
+  collegeCodeHsc: '1029',
+  collegeCodeDegree: '2567',
+  established: '1995',
+  location: 'لاكميبور بهاتابارا، راجشاهي',
+  type: 'كلية للدرجات العلمية للبنات غير حكومية',
+  affiliation: 'تابعة لمجلس التعليم الثانوي والعالي، راجشاهي والجامعة الوطنية في بنغلاديش',
+  slogan1: 'رعاية المهارات الحديثة بالقيم الأخلاقية التقليدية لتمكين المرأة.',
+  slogan2: 'بناء قادة الغد: مواطنون مستقلون، مبدعون، ووطنيون.',
+  statStudents: '1,500+ طالبة',
+  statTeachers: '45+ معلم',
+  statPassRate: '96.5% نسبة النجاح',
+  statLabs: '5 مختبرات',
+  statCampusArea: 'حرم جامعي آمن',
+  principalTitle: 'رسالة من المدير',
+  principalName: 'محمد أنام الحق موندول',
+  principalSpeech: 'مرحبا بكم في كليتنا...',
+  principalDegree: 'المدير (المكلف)',
+  presidentTitle: 'رسالة من الرئيس',
+  presidentName: 'شاهانور إسلام',
+  presidentSpeech: 'التعليم هو أفضل أداة...',
+  presidentDegree: 'الرئيس',
+  founderTitle: 'رسالة المؤسس',
+  founderName: 'الحاج جمير الدين والحاجة شافينا بيغوم',
+  founderSpeech: 'لقد تصورنا مؤسسة...',
+  founderVisionTitle: 'مهمتنا',
+  founderVisionText: 'تحقيق النمو البدني والفكري...',
+  academicTitle: 'برامجنا',
+  academicSubtitle: 'اكتشف برامجنا الأكاديمية...',
+  hscSection: 'الثانوية',
+  degreeSection: 'درجة البكالوريوس',
+  honoursSection: 'برامج الشرف',
+  hscDetails: 'معتمدة من مجلس راجشاهي للتعليم...',
+  degreeDetails: 'برنامج درجة 3 سنوات...',
+  honoursDetails: 'دورات شرف متخصصة...',
+  applyNowBtn: 'قدم الان',
+  checkEligibility: 'التحقق من الأهلية',
+  latestNotices: 'أحدث الإشعارات',
+  viewDetails: 'عرض التفاصيل',
+  closeBtn: 'إغلاق',
+  resultSectionTitle: 'النتائج',
+  resultSectionSubtitle: 'تحقق من نتائجك...',
+  resultExamLabel: 'الامتحان',
+  resultRegLabel: 'رقم التسجيل',
+  resultRollLabel: 'رقم الجلوس',
+  resultYearLabel: 'السنة',
+  resultSearchBtn: 'بحث',
+  resultNotFound: 'لم يتم العثور على النتيجة.'
+};
+
+
 // Course groups details
 export const hscGroups = [
   {
     id: "science",
     nameEN: "Science Group",
-    nameBN: "বিজ্ঞান বিভাগ",
+    nameBN: "বিজ্ঞান বিভাগ", nameAR: "مترجم بالعربية (Translated)",
     subjectsEN: ["Physics", "Chemistry", "Biology", "Higher Mathematics", "ICT", "Bangla", "English"],
-    subjectsBN: ["পদার্থবিজ্ঞান", "রসায়ন", "জীববিজ্ঞান", "উচ্চতর গণিত", "আইসিটি", "বাংলা", "ইংরেজি"],
+    subjectsBN: ["পদার্থবিজ্ঞান", "রসায়ন", "জীববিজ্ঞান", "উচ্চতর গণিত", "আইসিটি", "বাংলা", "ইংরেজি"], subjectsAR: ["موضوع (Subject)"],
     seats: 150,
     minGpaSsc: 3.5,
     duration: "2 Years",
     feesEN: "৳1,200/month",
-    feesBN: "৳১,২০০/মাস"
+    feesBN: "৳১,২০০/মাস",
+    feesAR: "رسوم (Fees)"
   },
   {
     id: "humanities",
     nameEN: "Humanities Group",
-    nameBN: "মানবিক বিভাগ",
+    nameBN: "মানবিক বিভাগ", nameAR: "مترجم بالعربية (Translated)",
     subjectsEN: ["Civics & Good Governance", "Islamic History & Culture", "Social Work", "Economics", "ICT", "Bangla", "English", "Logic"],
-    subjectsBN: ["পৌরনীতি ও সুশাসন", "ইসলামের ইতিহাস ও সংস্কৃতি", "সমাজকর্ম", "অর্থনীতি", "আইসিটি", "বাংলা", "ইংরেজি", "যুক্তিবিদ্যা"],
+    subjectsBN: ["পৌরনীতি ও সুশাসন", "ইসলামের ইতিহাস ও সংস্কৃতি", "সমাজকর্ম", "অর্থনীতি", "আইসিটি", "বাংলা", "ইংরেজি", "যুক্তিবিদ্যা"], subjectsAR: ["موضوع (Subject)"],
     seats: 300,
     minGpaSsc: 2.5,
     duration: "2 Years",
     feesEN: "৳900/month",
-    feesBN: "৳৯০০/মাস"
+    feesBN: "৳৯০০/মাস",
+    feesAR: "رسوم (Fees)"
   },
   {
     id: "business",
     nameEN: "Business Studies Group",
-    nameBN: "ব্যবসায় শিক্ষা বিভাগ",
+    nameBN: "ব্যবসায় শিক্ষা বিভাগ", nameAR: "مترجم بالعربية (Translated)",
     subjectsEN: ["Accounting", "Business Organization & Management", "Finance, Banking & Insurance", "Production Management & Marketing", "ICT", "Bangla", "English"],
-    subjectsBN: ["হিসাববিজ্ঞান", "ব্যবসায় সংগঠন ও ব্যবস্থাপনা", "ফিন্যান্স, ব্যাংকিং ও বিমা", "উৎপাদন ব্যবস্থাপনা ও বিপণন", "আইসিটি", "বাংলা", "ইংরেজি"],
+    subjectsBN: ["হিসাববিজ্ঞান", "ব্যবসায় সংগঠন ও ব্যবস্থাপনা", "ফিন্যান্স, ব্যাংকিং ও বিমা", "উৎপাদন ব্যবস্থাপনা ও বিপণন", "আইসিটি", "বাংলা", "ইংরেজি"], subjectsAR: ["موضوع (Subject)"],
     seats: 200,
     minGpaSsc: 2.5,
     duration: "2 Years",
     feesEN: "৳1,000/month",
-    feesBN: "৳১,০০০/মাস"
+    feesBN: "৳১,০০০/মাস",
+    feesAR: "رسوم (Fees)"
   }
 ];
 
@@ -268,41 +336,44 @@ export const degreeGroups = [
   {
     id: "ba",
     nameEN: "Bachelor of Arts (BA Pass)",
-    nameBN: "ব্যাচেলর অব আর্টস (বি.এ পাস)",
+    nameBN: "ব্যাচেলর অব আর্টস (বি.এ পাস)", nameAR: "مترجم بالعربية (Translated)",
     subjectsEN: ["Compulsory Bangla", "Compulsory English", "History of Independent Bangladesh", "Philosophy", "Islamic History", "Political Science", "Sanskrit/Arabic"],
-    subjectsBN: ["আবশ্যিক বাংলা", "আবশ্যিক ইংরেজি", "স্বাধীন বাংলাদেশের অভ্যুদয়ের ইতিহাস", "দর্শন", "ইসলামের ইতিহাস", "রাষ্ট্রবিজ্ঞান", "সংস্কৃত/আরবি"],
+    subjectsBN: ["আবশ্যিক বাংলা", "আবশ্যিক ইংরেজি", "স্বাধীন বাংলাদেশের অভ্যুদয়ের ইতিহাস", "দর্শন", "ইসলামের ইতিহাস", "রাষ্ট্রবিজ্ঞান", "সংস্কৃত/আরবি"], subjectsAR: ["موضوع (Subject)"],
     seats: 250,
     minGpaSsc: 2.0,
     minGpaHsc: 2.0,
     duration: "3 Years",
     feesEN: "৳4,500/year",
-    feesBN: "৳৪,৫০০/বছর"
+    feesBN: "৳৪,৫০০/বছর",
+    feesAR: "رسوم (Fees)"
   },
   {
     id: "bss",
     nameEN: "Bachelor of Social Science (BSS Pass)",
-    nameBN: "ব্যাচেলর অব সোশ্যাল সায়েন্স (বি.এস.এস পাস)",
+    nameBN: "ব্যাচেলর অব সোশ্যাল সায়েন্স (বি.এস.এস পাস)", nameAR: "مترجم بالعربية (Translated)",
     subjectsEN: ["Compulsory Bangla & English", "Sociology", "Social Work", "Economics", "Political Science", "Geography"],
-    subjectsBN: ["আবশ্যিক বাংলা ও ইংরেজি", "সমাজবিজ্ঞান", "সমাজকর্ম", "অর্থনীতি", "রাষ্ট্রবিজ্ঞান", "ভূগোল"],
+    subjectsBN: ["আবশ্যিক বাংলা ও ইংরেজি", "সমাজবিজ্ঞান", "সমাজকর্ম", "অর্থনীতি", "রাষ্ট্রবিজ্ঞান", "ভূগোল"], subjectsAR: ["موضوع (Subject)"],
     seats: 250,
     minGpaSsc: 2.0,
     minGpaHsc: 2.0,
     duration: "3 Years",
     feesEN: "৳4,500/year",
-    feesBN: "৳৪,৫০০/বছর"
+    feesBN: "৳৪,৫০০/বছর",
+    feesAR: "رسوم (Fees)"
   },
   {
     id: "bbs",
     nameEN: "Bachelor of Business Studies (BBS Pass)",
-    nameBN: "ব্যাচেলর অব বিজনেস স্টাডিজ (বি.বি.এস পাস)",
+    nameBN: "ব্যাচেলর অব বিজনেস স্টাডিজ (বি.বি.এস পাস)", nameAR: "مترجم بالعربية (Translated)",
     subjectsEN: ["Compulsory Bangla & English", "Accounting", "Management", "Finance", "Marketing"],
-    subjectsBN: ["আবশ্যিক বাংলা ও ইংরেজি", "হিসাববিজ্ঞান", "ব্যবস্থাপনা", "ফিন্যান্স", "মার্কেটিং"],
+    subjectsBN: ["আবশ্যিক বাংলা ও ইংরেজি", "হিসাববিজ্ঞান", "ব্যবস্থাপনা", "ফিন্যান্স", "মার্কেটিং"], subjectsAR: ["موضوع (Subject)"],
     seats: 150,
     minGpaSsc: 2.0,
     minGpaHsc: 2.0,
     duration: "3 Years",
     feesEN: "৳5,000/year",
-    feesBN: "৳৫,০০০/বছর"
+    feesBN: "৳৫,০০০/বছর",
+    feesAR: "رسوم (Fees)"
   }
 ];
 
@@ -310,38 +381,42 @@ export const honoursCourses = [
   {
     id: "h-bangla",
     nameEN: "B.A. (Honours) in Bangla",
-    nameBN: "বি.এ. (অনার্স) বাংলা",
+    nameBN: "বি.এ. (অনার্স) বাংলা", nameAR: "مترجم بالعربية (Translated)",
     duration: "4 Years",
     seats: 100,
     eligibilityEN: "HSC Pass with minimum GPA 3.0 in Bangla subject and overall GPA 3.0 in both SSC and HSC",
-    eligibilityBN: "এসএসসি ও এইচএসসি উভয় পরীক্ষায় ন্যূনতম জিপিএ ৩.০ এবং বাংলা বিষয়ে ন্যূনতম ৩.০ জিপিএ সহ উত্তীর্ণ হতে হবে।"
+    eligibilityBN: "এসএসসি ও এইচএসসি উভয় পরীক্ষায় ন্যূনতম জিপিএ ৩.০ এবং বাংলা বিষয়ে ন্যূনতম ৩.০ জিপিএ সহ উত্তীর্ণ হতে হবে।",
+    eligibilityAR: "أهلية (Eligibility)"
   },
   {
     id: "h-socialwork",
     nameEN: "B.S.S. (Honours) in Social Work",
-    nameBN: "বি.এস.এস. (অনার্স) সমাজকর্ম",
+    nameBN: "বি.এস.এস. (অনার্স) সমাজকর্ম", nameAR: "مترجم بالعربية (Translated)",
     duration: "4 Years",
     seats: 120,
     eligibilityEN: "HSC Pass with minimum overall GPA 3.0 in both SSC and HSC",
-    eligibilityBN: "এসএসসি ও এইচএসসি উভয় পরীক্ষায় ন্যূনতম জিপিএ ৩.০ সহ যেকোনো বিভাগ থেকে উত্তীর্ণ।"
+    eligibilityBN: "এসএসসি ও এইচএসসি উভয় পরীক্ষায় ন্যূনতম জিপিএ ৩.০ সহ যেকোনো বিভাগ থেকে উত্তীর্ণ।",
+    eligibilityAR: "أهلية (Eligibility)"
   },
   {
     id: "h-economics",
     nameEN: "B.S.S. (Honours) in Economics",
-    nameBN: "বি.এস.এস. (অনার্স) অর্থনীতি",
+    nameBN: "বি.এস.এস. (অনার্স) অর্থনীতি", nameAR: "مترجم بالعربية (Translated)",
     duration: "4 Years",
     seats: 80,
     eligibilityEN: "HSC Pass with minimum GPA 3.0 in Economics or Mathematics, and overall 3.0 in SSC & HSC",
-    eligibilityBN: "অর্থনীতি বা গণিত বিষয়ে ন্যূনতম জিপিএ ৩.০ এবং এসএসসি ও এইচএসসি উভয় পরীক্ষায় ৩.০ সহ উত্তীর্ণ।"
+    eligibilityBN: "অর্থনীতি বা গণিত বিষয়ে ন্যূনতম জিপিএ ৩.০ এবং এসএসসি ও এইচএসসি উভয় পরীক্ষায় ৩.০ সহ উত্তীর্ণ।",
+    eligibilityAR: "أهلية (Eligibility)"
   },
   {
     id: "h-management",
     nameEN: "B.B.S. (Honours) in Management",
-    nameBN: "বি.বি.এস. (অনার্স) ব্যবস্থাপনা",
+    nameBN: "বি.বি.এস. (অনার্স) ব্যবস্থাপনা", nameAR: "مترجم بالعربية (Translated)",
     duration: "4 Years",
     seats: 100,
     eligibilityEN: "HSC Pass in Business Studies / Science with overall GPA 3.0 in SSC & HSC",
-    eligibilityBN: "ব্যবসায় শিক্ষা বা বিজ্ঞান শাখা থেকে এসএসসি ও এইচএসসি উভয় পরীক্ষায় ন্যূনতম জিপিএ ৩.০ সহ উত্তীর্ণ।"
+    eligibilityBN: "ব্যবসায় শিক্ষা বা বিজ্ঞান শাখা থেকে এসএসসি ও এইচএসসি উভয় পরীক্ষায় ন্যূনতম জিপিএ ৩.০ সহ উত্তীর্ণ।",
+    eligibilityAR: "أهلية (Eligibility)"
   }
 ];
 
@@ -349,52 +424,57 @@ export const noticeData = [
   {
     id: 1,
     titleEN: "Postponement and Revised Dates of Degree 1st Year Exam 2025",
-    titleBN: "২০২৫ সালের ডিগ্রী ১ম বর্ষ পরীক্ষার তারিখ পরিবর্তন সংক্রান্ত সংশোধিত বিজ্ঞপ্তি",
+    titleBN: "২০২৫ সালের ডিগ্রী ১ম বর্ষ পরীক্ষার তারিখ পরিবর্তন সংক্রান্ত সংশোধিত বিজ্ঞপ্তি", titleAR: "عنوان (Title)",
     date: "2026-03-10",
     category: "exam",
     isNew: true,
     contentEN: "All students are hereby informed that due to unavoidable circumstances, the upcoming National University Degree 1st Year examinations have been postponed. The revised date-sheet has been published. Exams will commence from April 5th, 2026. Please collect your admit card from the college office desk by March 25th, 2026.",
-    contentBN: "সংশ্লিষ্ট সকলকে জানানো যাচ্ছে যে, অনিবার্য কারণে জাতীয় বিশ্ববিদ্যালয়ের অধীন অনুষ্ঠিতব্য ডিগ্রী ১ম বর্ষের পরীক্ষাসমূহ স্থগিত করা হয়েছে। নতুন সময়সূচী প্রকাশ করা হয়েছে। উক্ত পরীক্ষাসমূহ আগামী ৫ই এপ্রিল ২০২৬ তারিখ হতে শুরু হবে। ২৫শে মার্চ ২০২৬ তারিখের মধ্যে কলেজ কার্যালয় হতে প্রবেশপত্র সংগ্রহ করার জন্য নির্দেশ দেওয়া হলো।"
+    contentBN: "সংশ্লিষ্ট সকলকে জানানো যাচ্ছে যে, অনিবার্য কারণে জাতীয় বিশ্ববিদ্যালয়ের অধীন অনুষ্ঠিতব্য ডিগ্রী ১ম বর্ষের পরীক্ষাসমূহ স্থগিত করা হয়েছে। নতুন সময়সূচী প্রকাশ করা হয়েছে। উক্ত পরীক্ষাসমূহ আগামী ৫ই এপ্রিল ২০২৬ তারিখ হতে শুরু হবে। ২৫শে মার্চ ২০২৬ তারিখের মধ্যে কলেজ কার্যালয় হতে প্রবেশপত্র সংগ্রহ করার জন্য নির্দেশ দেওয়া হলো।",
+    contentAR: "محتوى (Content)"
   },
   {
     id: 2,
     titleEN: "HSC Practical Examination Schedule for Year 2026",
-    titleBN: "২০২৬ সালের এইচএসসি পরীক্ষার্থীদের আইসিটি ও বিজ্ঞান বিষয়ের ব্যবহারিক পরীক্ষার সময়সূচী",
+    titleBN: "২০২৬ সালের এইচএসসি পরীক্ষার্থীদের আইসিটি ও বিজ্ঞান বিষয়ের ব্যবহারিক পরীক্ষার সময়সূচী", titleAR: "عنوان (Title)",
     date: "2026-03-05",
     category: "exam",
     isNew: true,
     contentEN: "The Practical Examination for HSC ICT and Science subjects (Physics, Chemistry, Biology) will take place starting from March 18th to March 24th, 2026. Students must present their signature sheets, practical notebooks, and main board registration slips at the lab.",
-    contentBN: "এইচএসসি পরীক্ষার্থীদের আইসিটি এবং বিজ্ঞান বিভাগের পরীক্ষামূলক বিষয়ের (পদার্থ, রসায়ন, জীববিজ্ঞান) ব্যবহারিক পরীক্ষা আগামী ১৮ই মার্চ থেকে ২৪শে মার্চ ২০২৬ পর্যন্ত প্রতিদিন সকাল ৯টা থেকে অনুষ্ঠিত হবে। ছাত্রীদের অবশ্যই ব্যবহারিক খাতা ও মূল রেজিস্ট্রেশন কার্ড সাথে আনতে হবে।"
+    contentBN: "এইচএসসি পরীক্ষার্থীদের আইসিটি এবং বিজ্ঞান বিভাগের পরীক্ষামূলক বিষয়ের (পদার্থ, রসায়ন, জীববিজ্ঞান) ব্যবহারিক পরীক্ষা আগামী ১৮ই মার্চ থেকে ২৪শে মার্চ ২০২৬ পর্যন্ত প্রতিদিন সকাল ৯টা থেকে অনুষ্ঠিত হবে। ছাত্রীদের অবশ্যই ব্যবহারিক খাতা ও মূল রেজিস্ট্রেশন কার্ড সাথে আনতে হবে।",
+    contentAR: "محتوى (Content)"
   },
   {
     id: 3,
     titleEN: "Extension of Registration Date for Honours 1st Year Admission (Session 2025-26)",
-    titleBN: "২০২৫-২০২৬ শিক্ষাবর্ষে অনার্স ১ম বর্ষ ভর্তির রেজিষ্ট্রেশনের সময়সীমা বৃদ্ধি সংক্রান্ত বিজ্ঞপ্তি",
+    titleBN: "২০২৫-২০২৬ শিক্ষাবর্ষে অনার্স ১ম বর্ষ ভর্তির রেজিষ্ট্রেশনের সময়সীমা বৃদ্ধি সংক্রান্ত বিজ্ঞপ্তি", titleAR: "عنوان (Title)",
     date: "2026-02-28",
     category: "admission",
     isNew: false,
     contentEN: "National University has extended the online registration and form verification date for Honours 1st year admission up to March 15th, 2026. Selected candidates are requested to pay their fees via the online portal and submit documents in person to Room 104.",
-    contentBN: "জাতীয় বিশ্ববিদ্যালয় কর্তৃক অনার্স ১ম বর্ষে ভর্তির সময়সীমা আগামী ১৫ই মার্চ ২০২৬ তারিখ পর্যন্ত বৃদ্ধি করা হয়েছে। নির্বাচিত ছাত্রীদের অনলাইনে আবেদন ফরম পূরণপূর্বক নির্ধারিত ফি পরিশোধ করে প্রয়োজনীয় কাগজপত্রসহ আগামী ১৬ই মার্চের মধ্যে কলেজের ১০৪ নং কক্ষে জমা দিতে হবে।"
+    contentBN: "জাতীয় বিশ্ববিদ্যালয় কর্তৃক অনার্স ১ম বর্ষে ভর্তির সময়সীমা আগামী ১৫ই মার্চ ২০২৬ তারিখ পর্যন্ত বৃদ্ধি করা হয়েছে। নির্বাচিত ছাত্রীদের অনলাইনে আবেদন ফরম পূরণপূর্বক নির্ধারিত ফি পরিশোধ করে প্রয়োজনীয় কাগজপত্রসহ আগামী ১৬ই মার্চের মধ্যে কলেজের ১০৪ নং কক্ষে জমা দিতে হবে।",
+    contentAR: "محتوى (Content)"
   },
   {
     id: 4,
     titleEN: "Notice regarding Holiday on the occasion of Independence Day",
-    titleBN: "২৬শে মার্চ মহান স্বাধীনতা দিবস উপলক্ষে কলেজ ছুটি ও আলোচনা সভার নোটিশ",
+    titleBN: "২৬শে মার্চ মহান স্বাধীনতা দিবস উপলক্ষে কলেজ ছুটি ও আলোচনা সভার নোটিশ", titleAR: "عنوان (Title)",
     date: "2026-03-12",
     category: "holiday",
     isNew: true,
     contentEN: "The college academic classes will remain closed on 26th March 2026 on the occasion of Independence Day. However, a flag hoisting ceremony followed by a special discussion meeting & cultural program will be organized in the college seminar hall at 8:30 AM. Attendance of all students is highly expected.",
-    contentBN: "আগামী ২৬শে মার্চ ২০২৬ মহান স্বাধীনতা ও জাতীয় দিবস উপলক্ষে কলেজের সকল শ্রেণী কার্যক্রম বন্ধ থাকবে। তবে ঐদিন সকাল ৮:৩০ মিনিটে কলেজ প্রাঙ্গণে জাতীয় পতাকা উত্তোলন, আলোচনা সভা ও সাংস্কৃতিক অনুষ্ঠানের আয়োজন করা হয়েছে। সকল ছাত্রীর উপস্থিতি কাম্য।"
+    contentBN: "আগামী ২৬শে মার্চ ২০২৬ মহান স্বাধীনতা ও জাতীয় দিবস উপলক্ষে কলেজের সকল শ্রেণী কার্যক্রম বন্ধ থাকবে। তবে ঐদিন সকাল ৮:৩০ মিনিটে কলেজ প্রাঙ্গণে জাতীয় পতাকা উত্তোলন, আলোচনা সভা ও সাংস্কৃতিক অনুষ্ঠানের আয়োজন করা হয়েছে। সকল ছাত্রীর উপস্থিতি কাম্য।",
+    contentAR: "محتوى (Content)"
   },
   {
     id: 5,
     titleEN: "Distribution of Free Textbook Assistant & Stipend Forms for Underprivileged Female Students",
-    titleBN: "মেধাবী ও অসচ্ছল ছাত্রীদের জন্য বিনামূল্যে পাঠ্যপুস্তক সহায়তা ও উপবৃত্তি ফরম বিতরণ",
+    titleBN: "মেধাবী ও অসচ্ছল ছাত্রীদের জন্য বিনামূল্যে পাঠ্যপুস্তক সহায়তা ও উপবৃত্তি ফরম বিতরণ", titleAR: "عنوان (Title)",
     date: "2026-02-15",
     category: "general",
     isNew: false,
     contentEN: "Under the Haji Jamir Uddin Shafina Trust Fund, underprivileged but brilliant female students can apply for free textbooks and monthly stipends. Applications must be downloaded from the portal or collected from the General Office and submitted before March 10th, 2026.",
-    contentBN: "হাজী জমির উদ্দীন শাফিনা ট্রাস্ট ফান্ডের অধীনে মেধাবী ও অসচ্ছল ছাত্রীদের মাঝে বিনামূল্যে পাঠ্যপুস্তক বিতরণ ও মাসিক উপবৃত্তির আবেদন ফরম বিতরণ করা হচ্ছে। ইচ্ছুক ছাত্রীদের প্রয়োজনীয় প্রমাণাদিসহ আগামী ১০ই মার্চ ২০২৬ তারিখের মধ্যে সাধারণ শাখায় আবেদন করতে বলা হলো।"
+    contentBN: "হাজী জমির উদ্দীন শাফিনা ট্রাস্ট ফান্ডের অধীনে মেধাবী ও অসচ্ছল ছাত্রীদের মাঝে বিনামূল্যে পাঠ্যপুস্তক বিতরণ ও মাসিক উপবৃত্তির আবেদন ফরম বিতরণ করা হচ্ছে। ইচ্ছুক ছাত্রীদের প্রয়োজনীয় প্রমাণাদিসহ আগামী ১০ই মার্চ ২০২৬ তারিখের মধ্যে সাধারণ শাখায় আবেদন করতে বলা হলো।",
+    contentAR: "محتوى (Content)"
   }
 ];
 
@@ -402,49 +482,49 @@ export const facilitiesData = [
   {
     id: "ict-lab",
     titleEN: "Advanced ICT & Computer Lab",
-    titleBN: "উন্নত আইসিটি ও কম্পিউটার ল্যাব",
+    titleBN: "উন্নত আইসিটি ও কম্পিউটার ল্যাব", titleAR: "عنوان (Title)",
     descEN: "Equipped with 35 high-speed computers with broadband internet access. Practical classes are led by dedicated IT teachers to ensure computer literacy for every woman.",
-    descBN: "ব্রডব্যান্ড ইন্টারনেট সংযোগসহ ৩৫টি উচ্চ গতিসম্পন্ন কম্পিউটার সমৃদ্ধ ল্যাব। প্রতিটি ছাত্রীর কম্পিউটার জ্ঞান নিশ্চিত করতে ডেডিকেটেড আইটি শিক্ষকদের তত্ত্বাবধানে ব্যবহারিক ক্লাস নেওয়া হয়।",
+    descBN: "ব্রডব্যান্ড ইন্টারনেট সংযোগসহ ৩৫টি উচ্চ গতিসম্পন্ন কম্পিউটার সমৃদ্ধ ল্যাব। প্রতিটি ছাত্রীর কম্পিউটার জ্ঞান নিশ্চিত করতে ডেডিকেটেড আইটি শিক্ষকদের তত্ত্বাবধানে ব্যবহারিক ক্লাস নেওয়া হয়।", descAR: "وصف (Description)",
     image: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&q=80&w=600"
   },
   {
     id: "science-labs",
     titleEN: "Rich Science Laboratories",
-    titleBN: "সমৃদ্ধ বিজ্ঞান পরীক্ষাগার",
+    titleBN: "সমৃদ্ধ বিজ্ঞান পরীক্ষাগার", titleAR: "عنوان (Title)",
     descEN: "Separate advanced laboratories for Physics, Chemistry, and Biology practical experiments with safely guided instruments and premium apparatus.",
-    descBN: "পদার্থবিজ্ঞান, রসায়ন ও জীববিজ্ঞানের ব্যবহারিক পরীক্ষার জন্য পৃথক অত্যাধুনিক ল্যাবরেটরি, যা আধুনিক বৈজ্ঞানিক যন্ত্রপাতি এবং নিরাপদ পরীক্ষামূলক সরঞ্জামে সমৃদ্ধ।",
+    descBN: "পদার্থবিজ্ঞান, রসায়ন ও জীববিজ্ঞানের ব্যবহারিক পরীক্ষার জন্য পৃথক অত্যাধুনিক ল্যাবরেটরি, যা আধুনিক বৈজ্ঞানিক যন্ত্রপাতি এবং নিরাপদ পরীক্ষামূলক সরঞ্জামে সমৃদ্ধ।", descAR: "وصف (Description)",
     image: "https://images.unsplash.com/photo-1507668077129-56e32842fceb?auto=format&fit=crop&q=80&w=600"
   },
   {
     id: "library",
     titleEN: "Shafina Memorial Library",
-    titleBN: "শাফিনা মেমোরিয়াল লাইব্রেরী",
+    titleBN: "শাফিনা মেমোরিয়াল লাইব্রেরী", titleAR: "عنوان (Title)",
     descEN: "Houses over 8,500 physical books, reference guides, national and international journals, and a peaceful reading section holding up to 60 students simultaneously.",
-    descBN: "৮,৫০০-এরও বেশি মূল বই, রেফারেন্স গাইড, জাতীয় ও আন্তর্জাতিক সাময়িকী সমৃদ্ধ লাইব্রেরি, যেখানে একসাথে ৬০ জন ছাত্রী শান্ত পরিবেশে পড়াশোনা করতে পারে।",
+    descBN: "৮,৫০০-এরও বেশি মূল বই, রেফারেন্স গাইড, জাতীয় ও আন্তর্জাতিক সাময়িকী সমৃদ্ধ লাইব্রেরি, যেখানে একসাথে ৬০ জন ছাত্রী শান্ত পরিবেশে পড়াশোনা করতে পারে।", descAR: "وصف (Description)",
     image: "https://images.unsplash.com/photo-1497633762265-9d179a990aa6?auto=format&fit=crop&q=80&w=600"
   },
   {
     id: "safety",
     titleEN: "100% Secure Girl's Campus",
-    titleBN: "শতভাগ নিরাপদ ছাত্রী ক্যাম্পাস",
+    titleBN: "শতভাগ নিরাপদ ছাত্রী ক্যাম্পাস", titleAR: "عنوان (Title)",
     descEN: "Monitored 24/7 with CCTV surveillance and secure high boundaries. Professional female security guards manage the gate to ensure complete safety and peace of mind.",
-    descBN: "সিসিটিভি ক্যামেরায় ২৪/৭ সার্বক্ষণিক নজরদারি এবং সীমানা প্রাচীর বেষ্টিত সম্পূর্ণ নিরাপদ ক্যাম্পাস। গেট ব্যবস্থাপনায় পেশাদার নারী নিরাপত্তা প্রহরী নিয়োজিত আছেন।",
+    descBN: "সিসিটিভি ক্যামেরায় ২৪/৭ সার্বক্ষণিক নজরদারি এবং সীমানা প্রাচীর বেষ্টিত সম্পূর্ণ নিরাপদ ক্যাম্পাস। গেট ব্যবস্থাপনায় পেশাদার নারী নিরাপত্তা প্রহরী নিয়োজিত আছেন।", descAR: "وصف (Description)",
     image: "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&q=80&w=600"
   },
   {
     id: "rover-scout",
     titleEN: "Rover Scout & BNCC Wing",
-    titleBN: "রোভার স্কাউট এবং বিএনসিসি শাখা",
+    titleBN: "রোভার স্কাউট এবং বিএনসিসি শাখা", titleAR: "عنوان (Title)",
     descEN: "Encourages leadership, courage, and social services. Our students participate in national parades, disaster relief and self-defense training programs.",
-    descBN: "নেতৃত্ব, সাহস ও সামাজিক সেবামূলক মনোভাব গড়ে তুলতে কাজ করে। আমাদের ছাত্রীরা জাতীয় প্যারেড, দুর্যোগ মোকাবেলা ও আত্মরক্ষা বিষয়ক প্রশিক্ষণে নিয়মিত অংশগ্রহণ করে।",
+    descBN: "নেতৃত্ব, সাহস ও সামাজিক সেবামূলক মনোভাব গড়ে তুলতে কাজ করে। আমাদের ছাত্রীরা জাতীয় প্যারেড, দুর্যোগ মোকাবেলা ও আত্মরক্ষা বিষয়ক প্রশিক্ষণে নিয়মিত অংশগ্রহণ করে।", descAR: "وصف (Description)",
     image: "https://images.unsplash.com/photo-1511556532299-8f662fc26c06?auto=format&fit=crop&q=80&w=600"
   },
   {
     id: "hostel",
     titleEN: "Safe On-Campus Accommodation",
-    titleBN: "নিরাপদ অন-ক্যাম্পাস হোস্টেল সুবিধা",
+    titleBN: "নিরাপদ অন-ক্যাম্পাস হোস্টেল সুবিধা", titleAR: "عنوان (Title)",
     descEN: "Comfortable and safe home-like hostel inside the college boundaries for distant students with nutritious dining facilities and parental monitoring system.",
-    descBN: "দূর-দূরান্ত থেকে আসা ছাত্রীদের জন্য কলেজ সীমানার ভেতরেই পুষ্টিকর খাবার এবং অভিভাবকীয় তদারকি সমৃদ্ধ সম্পূর্ণ নিরাপদ ও আরামদায়ক হোস্টেল সুবিধা।",
+    descBN: "দূর-দূরান্ত থেকে আসা ছাত্রীদের জন্য কলেজ সীমানার ভেতরেই পুষ্টিকর খাবার এবং অভিভাবকীয় তদারকি সমৃদ্ধ সম্পূর্ণ নিরাপদ ও আরামদায়ক হোস্টেল সুবিধা।", descAR: "وصف (Description)",
     image: "https://images.unsplash.com/photo-1555854877-bab0e564b8d5?auto=format&fit=crop&q=80&w=600"
   }
 ];
@@ -454,42 +534,42 @@ export const galleryData = [
     id: 1,
     category: "campus",
     titleEN: "College Main Administrative Front Building",
-    titleBN: "কলেজের মূল প্রশাসনিক ও একাডেমিক ভবন",
+    titleBN: "কলেজের মূল প্রশাসনিক ও একাডেমিক ভবন", titleAR: "عنوان (Title)",
     url: "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&q=80&w=800"
   },
   {
     id: 2,
     category: "events",
     titleEN: "Honours Graduate Reception and Prize Distribution",
-    titleBN: "অনার্স গ্র্যাজুয়েট কৃতি সংবর্ধনা ও পুরস্কার বিতরণী",
+    titleBN: "অনার্স গ্র্যাজুয়েট কৃতি সংবর্ধনা ও পুরস্কার বিতরণী", titleAR: "عنوان (Title)",
     url: "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&q=80&w=800"
   },
   {
     id: 3,
     category: "lab",
     titleEN: "Students working on experiments in Biology Laboratory",
-    titleBN: "জীববিজ্ঞান ল্যাবে ছাত্রীদের ব্যবহারিক কাজ",
+    titleBN: "জীববিজ্ঞান ল্যাবে ছাত্রীদের ব্যবহারিক কাজ", titleAR: "عنوان (Title)",
     url: "https://images.unsplash.com/photo-1532094349884-543bc11b234d?auto=format&fit=crop&q=80&w=800"
   },
   {
     id: 4,
     category: "classroom",
     titleEN: "Modern Multi-media projector based digital Classroom",
-    titleBN: "প্রজেক্টর নির্ভর আধুনিক ডিজিটাল মাল্টিমিডিয়া ক্লাসরুম",
+    titleBN: "প্রজেক্টর নির্ভর আধুনিক ডিজিটাল মাল্টিমিডিয়া ক্লাসরুম", titleAR: "عنوان (Title)",
     url: "https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?auto=format&fit=crop&q=80&w=800"
   },
   {
     id: 5,
     category: "sports",
     titleEN: "Annual Sports Competition & Cultural Dance Program",
-    titleBN: "বার্ষিক ক্রীড়া প্রতিযোগিতা ও সাংস্কৃতিক নৃত্য পরিবেশনা",
+    titleBN: "বার্ষিক ক্রীড়া প্রতিযোগিতা ও সাংস্কৃতিক নৃত্য পরিবেশনা", titleAR: "عنوان (Title)",
     url: "https://images.unsplash.com/photo-1460518451285-cd7af74a23b5?auto=format&fit=crop&q=80&w=800"
   },
   {
     id: 6,
     category: "events",
     titleEN: "Celebration of International Mother Language Day",
-    titleBN: "মহান শহীদ ও আন্তর্জাতিক মাতৃভাষা দিবস উদযাপন",
+    titleBN: "মহান শহীদ ও আন্তর্জাতিক মাতৃভাষা দিবস উদযাপন", titleAR: "عنوان (Title)",
     url: "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&q=80&w=800"
   }
 ];
@@ -499,46 +579,51 @@ export const campusSpots = [
   {
     id: "admin",
     nameEN: "Haji Jamir Uddin Academic Building",
-    nameBN: "হাজী জমির উদ্দীন একাডেমিক ভবন",
+    nameBN: "হাজী জমির উদ্দীন একাডেমিক ভবন", nameAR: "مترجم بالعربية (Translated)",
     floorsEN: "3-Storey Building",
-    floorsBN: "৩ তলা বিশিষ্ট মূল ভবন",
+    floorsBN: "৩ তলা বিশিষ্ট মূল ভবন", floorsAR: "طوابق (Floors)",
     detailsEN: "Hosts the Principal's Room, Faculty Staff lounge, General Office, admission help desk and high secondary classrooms.",
-    detailsBN: "অধ্যক্ষ মহোদয়ের কার্যালয়, শিক্ষক মিলনায়তন, হিসাব শাখা, ভর্তি সহায়তা কেন্দ্র ও উচ্চ মাধ্যমিক শিক্ষার্থীদের ক্লাসরুম নিয়ে গঠিত।"
+    detailsBN: "অধ্যক্ষ মহোদয়ের কার্যালয়, শিক্ষক মিলনায়তন, হিসাব শাখা, ভর্তি সহায়তা কেন্দ্র ও উচ্চ মাধ্যমিক শিক্ষার্থীদের ক্লাসরুম নিয়ে গঠিত।",
+    detailsAR: "تفاصيل (Details)"
   },
   {
     id: "shafina-hall",
     nameEN: "Shafina Auditorium & Library Hall",
-    nameBN: "শাফিনা অডিটোরিয়াম ও লাইব্রেরী হল",
+    nameBN: "শাফিনা অডিটোরিয়াম ও লাইব্রেরী হল", nameAR: "مترجم بالعربية (Translated)",
     floorsEN: "Modern Seminar Complex",
-    floorsBN: "আধুনিক সেমিনার ও সাংস্কৃতিক কমপ্লেক্স",
+    floorsBN: "আধুনিক সেমিনার ও সাংস্কৃতিক কমপ্লেক্স", floorsAR: "طوابق (Floors)",
     detailsEN: "Houses our library of 8,500+ books on the 1st floor and a 500-seat multi-purpose cultural auditorium on the ground floor.",
-    detailsBN: "১ম তলায় ৮,৫০০+ বই সমৃদ্ধ সুপরিসর লাইব্রেরী এবং নিচতলায় ৫০০ আসন বিশিষ্ট আধুনিক সাংস্কৃতিক মিলনাকায়তন অবস্থিত।"
+    detailsBN: "১ম তলায় ৮,৫০০+ বই সমৃদ্ধ সুপরিসর লাইব্রেরী এবং নিচতলায় ৫০০ আসন বিশিষ্ট আধুনিক সাংস্কৃতিক মিলনাকায়তন অবস্থিত।",
+    detailsAR: "تفاصيل (Details)"
   },
   {
     id: "science-ict",
     nameEN: "Dr. Wazed Miah ICT & Science Building",
-    nameBN: "ড. ওয়াজেদ মিয়া আইসিটি ও বিজ্ঞান ভবন",
+    nameBN: "ড. ওয়াজেদ মিয়া আইসিটি ও বিজ্ঞান ভবন", nameAR: "مترجم بالعربية (Translated)",
     floorsEN: "State-of-the-Art Science Block",
-    floorsBN: "অত্যাধুনিক বিজ্ঞান ও প্রযুক্তি ভবন",
+    floorsBN: "অত্যাধুনিক বিজ্ঞান ও প্রযুক্তি ভবন", floorsAR: "طوابق (Floors)",
     detailsEN: "Contains Physics, Chemistry, Biology labs, and the main high-speed Computer and Language Training centers.",
-    detailsBN: "পদার্থ, রসায়ন, জীববিজ্ঞান ল্যাব এবং প্রধান দ্রুতগতির কম্পিউটার ও ভাষা প্রশিক্ষণ ল্যাবসমূহ এ ভবনে অবস্থিত।"
+    detailsBN: "পদার্থ, রসায়ন, জীববিজ্ঞান ল্যাব এবং প্রধান দ্রুতগতির কম্পিউটার ও ভাষা প্রশিক্ষণ ল্যাবসমূহ এ ভবনে অবস্থিত।",
+    detailsAR: "تفاصيل (Details)"
   },
   {
     id: "girls-hostel",
     nameEN: "Begum Rokeya Student Hostel",
-    nameBN: "বেগম রোকেয়া ছাত্রী নিবাস",
+    nameBN: "বেগম রোকেয়া ছাত্রী নিবাস", nameAR: "مترجم بالعربية (Translated)",
     floorsEN: "Secure Accommodation Block",
-    floorsBN: "সম্পূর্ণ নিরাপদ আবাসন ভবন",
+    floorsBN: "সম্পূর্ণ নিরাপদ আবাসন ভবন", floorsAR: "طوابق (Floors)",
     detailsEN: "Capacity to accommodate up to 150 distant students with 24/7 security, nutritious dining, and internal recreation rooms.",
-    detailsBN: "দূরবর্তী এলাকার ১৫০ জন ছাত্রীর থাকার সুব্যবস্থা, ২৪ ঘণ্টা নিরাপত্তা, ডাইনিং ও বিনোদন কক্ষ সম্বলিত আধুনিক হোস্টেল।"
+    detailsBN: "দূরবর্তী এলাকার ১৫০ জন ছাত্রীর থাকার সুব্যবস্থা, ২৪ ঘণ্টা নিরাপত্তা, ডাইনিং ও বিনোদন কক্ষ সম্বলিত আধুনিক হোস্টেল।",
+    detailsAR: "تفاصيل (Details)"
   },
   {
     id: "common-room",
     nameEN: "Common Room & Sports Club",
-    nameBN: "কমন রুম ও ইনডোর স্পোর্টস জোন",
+    nameBN: "কমন রুম ও ইনডোর স্পোর্টস জোন", nameAR: "مترجم بالعربية (Translated)",
     floorsEN: "Student Recreation Center",
-    floorsBN: "ছাত্রী বিনোদন কেন্দ্র",
+    floorsBN: "ছাত্রী বিনোদন কেন্দ্র", floorsAR: "طوابق (Floors)",
     detailsEN: "Equipped with Carrom, Chess, Table Tennis and reading materials. Main coordination spot for BNCC and Rover Scouts.",
-    detailsBN: "ক্যারম, দাবা, টেবিল টেনিস ও বিনোদন পত্রিকা সমৃদ্ধ। এটি বিএনসিসি ও রোভার স্কাউটের প্রধান সমন্বয় কেন্দ্র।"
+    detailsBN: "ক্যারম, দাবা, টেবিল টেনিস ও বিনোদন পত্রিকা সমৃদ্ধ। এটি বিএনসিসি ও রোভার স্কাউটের প্রধান সমন্বয় কেন্দ্র।",
+    detailsAR: "تفاصيل (Details)"
   }
 ];

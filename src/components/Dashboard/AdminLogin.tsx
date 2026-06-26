@@ -4,7 +4,7 @@ import { Lock, ArrowRight, ShieldAlert, ArrowLeft } from "lucide-react";
 interface AdminLoginProps {
   onLogin: () => void;
   onCancel: () => void;
-  lang: "EN" | "BN";
+  lang: "EN" | "BN" | "AR";
   correctPin: string;
 }
 

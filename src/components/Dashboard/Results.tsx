@@ -11,7 +11,7 @@ export interface Result {
 }
 
 interface ResultsProps {
-  lang: 'EN' | 'BN';
+  lang: "EN" | "BN" | "AR";
   results: Result[];
   setResults: (results: Result[]) => void;
 }
@@ -81,10 +81,10 @@ export function Results({ lang, results, setResults }: ResultsProps) {
   );
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden font-sans">
-      <div className="p-6 border-b border-slate-200 bg-slate-50/50 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden font-sans">
+      <div className="p-6 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold text-slate-800 flex items-center gap-2">
+          <h2 className="text-xl font-bold text-slate-800 dark:text-slate-200 flex items-center gap-2">
             <Award className="w-5 h-5 text-indigo-500" />
             {lang === 'EN' ? 'Manage Results' : 'ফলাফল পরিচালনা'}
           </h2>
@@ -99,7 +99,7 @@ export function Results({ lang, results, setResults }: ResultsProps) {
             <input 
               type="text" 
               placeholder={lang === 'EN' ? "Search ID or Exam..." : "আইডি বা পরীক্ষার নাম..."}
-              className="pl-9 pr-4 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none w-full sm:w-64"
+              className="pl-9 pr-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none w-full sm:w-64"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -115,24 +115,24 @@ export function Results({ lang, results, setResults }: ResultsProps) {
       </div>
 
       {showAddForm && (
-        <div className="p-6 border-b border-slate-200 bg-indigo-50/50">
+        <div className="p-6 border-b border-slate-200 dark:border-slate-700 bg-indigo-50/50">
           <form onSubmit={handleAddResult} className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">{lang === 'EN' ? 'Student ID' : 'স্টুডেন্ট আইডি'}</label>
-              <input type="text" required value={studentId} onChange={e => setStudentId(e.target.value)} className="w-full p-2 border border-slate-300 rounded-lg text-sm" placeholder="e.g. STU-2026-001" />
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">{lang === 'EN' ? 'Student ID' : 'স্টুডেন্ট আইডি'}</label>
+              <input type="text" required value={studentId} onChange={e => setStudentId(e.target.value)} className="w-full p-2 border border-slate-300 dark:border-slate-600 rounded-lg text-sm" placeholder="e.g. STU-2026-001" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">{lang === 'EN' ? 'Exam Name' : 'পরীক্ষার নাম'}</label>
-              <input type="text" required value={examName} onChange={e => setExamName(e.target.value)} className="w-full p-2 border border-slate-300 rounded-lg text-sm" placeholder="e.g. HSC Final Test" />
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">{lang === 'EN' ? 'Exam Name' : 'পরীক্ষার নাম'}</label>
+              <input type="text" required value={examName} onChange={e => setExamName(e.target.value)} className="w-full p-2 border border-slate-300 dark:border-slate-600 rounded-lg text-sm" placeholder="e.g. HSC Final Test" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">{lang === 'EN' ? 'GPA' : 'জিপিএ'}</label>
-              <input type="text" required value={gpa} onChange={e => setGpa(e.target.value)} className="w-full p-2 border border-slate-300 rounded-lg text-sm" placeholder="e.g. 5.00" />
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">{lang === 'EN' ? 'GPA' : 'জিপিএ'}</label>
+              <input type="text" required value={gpa} onChange={e => setGpa(e.target.value)} className="w-full p-2 border border-slate-300 dark:border-slate-600 rounded-lg text-sm" placeholder="e.g. 5.00" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">{lang === 'EN' ? 'Grade' : 'গ্রেড'}</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">{lang === 'EN' ? 'Grade' : 'গ্রেড'}</label>
               <div className="flex gap-2">
-                <input type="text" required value={grade} onChange={e => setGrade(e.target.value)} className="w-full p-2 border border-slate-300 rounded-lg text-sm" placeholder="e.g. A+" />
+                <input type="text" required value={grade} onChange={e => setGrade(e.target.value)} className="w-full p-2 border border-slate-300 dark:border-slate-600 rounded-lg text-sm" placeholder="e.g. A+" />
                 <button type="submit" className="bg-indigo-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-indigo-700">{lang === 'EN' ? 'Save' : 'সংরক্ষণ'}</button>
               </div>
             </div>
@@ -143,7 +143,7 @@ export function Results({ lang, results, setResults }: ResultsProps) {
       <div className="overflow-x-auto">
         <table className="w-full text-left border-collapse">
           <thead>
-            <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 text-xs uppercase tracking-wider">
+            <tr className="bg-slate-50 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 text-slate-500 text-xs uppercase tracking-wider">
               <th className="p-4 font-semibold">{lang === 'EN' ? 'Student ID' : 'স্টুডেন্ট আইডি'}</th>
               <th className="p-4 font-semibold">{lang === 'EN' ? 'Exam Name' : 'পরীক্ষার নাম'}</th>
               <th className="p-4 font-semibold">{lang === 'EN' ? 'GPA' : 'জিপিএ'}</th>
@@ -161,15 +161,15 @@ export function Results({ lang, results, setResults }: ResultsProps) {
               </tr>
             ) : (
               filteredResults.map((result) => (
-                <tr key={result.id} className="hover:bg-slate-50/80 transition-colors">
-                  <td className="p-4 font-bold text-slate-800 font-mono text-sm">{result.student_id}</td>
-                  <td className="p-4 text-sm font-medium text-slate-700">{result.exam_name}</td>
+                <tr key={result.id} className="hover:bg-slate-50 dark:bg-slate-800/80 transition-colors">
+                  <td className="p-4 font-bold text-slate-800 dark:text-slate-200 font-mono text-sm">{result.student_id}</td>
+                  <td className="p-4 text-sm font-medium text-slate-700 dark:text-slate-300">{result.exam_name}</td>
                   <td className="p-4">
                     <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">
                       {result.gpa}
                     </span>
                   </td>
-                  <td className="p-4 font-bold text-slate-700">{result.grade}</td>
+                  <td className="p-4 font-bold text-slate-700 dark:text-slate-300">{result.grade}</td>
                   <td className="p-4 text-sm text-slate-600">{result.published_date}</td>
                   <td className="p-4 text-right">
                     <button 

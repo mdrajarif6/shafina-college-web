@@ -1,5 +1,5 @@
 import React from 'react';
-import { Search, CheckCircle, XCircle, Clock, Filter, FileText } from 'lucide-react';
+import { Search, CheckCircle, XCircle, Clock, Filter, FileText, Trash2 } from 'lucide-react';
 
 export interface Application {
   applicationID: string;
@@ -12,7 +12,7 @@ export interface Application {
 }
 
 interface ApplicationsProps {
-  lang: 'EN' | 'BN';
+  lang: "EN" | "BN" | "AR";
   applications: Application[];
   setApplications: (apps: Application[]) => void;
 }
@@ -40,6 +40,23 @@ export function Applications({ lang, applications, setApplications }: Applicatio
     .catch(err => console.error(err));
   };
 
+  const handleDelete = (id: string) => {
+    if(!confirm(lang === 'EN' ? "Are you sure you want to delete this application?" : "আপনি কি নিশ্চিত যে আপনি এই আবেদনটি মুছে ফেলতে চান?")) return;
+    
+    fetch(`api/applications.php?id=${id}`, {
+      method: 'DELETE'
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (!data.error) {
+        setApplications(applications.filter(a => a.applicationID !== id));
+      } else {
+        alert("Failed to delete application from database.");
+      }
+    })
+    .catch(err => console.error(err));
+  };
+
   const filteredApps = applications.filter(app => {
     const matchesSearch = app.applicantName.toLowerCase().includes(searchTerm.toLowerCase()) || 
                           app.applicationID.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -49,11 +66,11 @@ export function Applications({ lang, applications, setApplications }: Applicatio
   });
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden font-sans">
+    <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden font-sans">
       {/* Header and Controls */}
-      <div className="p-6 border-b border-slate-200 bg-slate-50/50 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="p-6 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold text-slate-800 flex items-center gap-2">
+          <h2 className="text-xl font-bold text-slate-800 dark:text-slate-200 flex items-center gap-2">
             <FileText className="w-5 h-5 text-indigo-500" />
             {lang === 'EN' ? 'Student Applications' : 'শিক্ষার্থীর আবেদনসমূহ'}
           </h2>
@@ -68,7 +85,7 @@ export function Applications({ lang, applications, setApplications }: Applicatio
             <input 
               type="text" 
               placeholder={lang === 'EN' ? "Search ID or Name..." : "আইডি বা নাম খুঁজুন..."}
-              className="pl-9 pr-4 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none w-full sm:w-64"
+              className="pl-9 pr-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none w-full sm:w-64"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -77,7 +94,7 @@ export function Applications({ lang, applications, setApplications }: Applicatio
           <div className="relative">
             <Filter className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
             <select
-              className="pl-9 pr-8 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none appearance-none bg-white cursor-pointer"
+              className="pl-9 pr-8 py-2 border border-slate-300 dark:border-slate-600 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none appearance-none bg-white dark:bg-slate-900 cursor-pointer"
               value={filterStatus}
               onChange={(e) => setFilterStatus(e.target.value as any)}
             >
@@ -94,7 +111,7 @@ export function Applications({ lang, applications, setApplications }: Applicatio
       <div className="overflow-x-auto">
         <table className="w-full text-left border-collapse">
           <thead>
-            <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 text-xs uppercase tracking-wider">
+            <tr className="bg-slate-50 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 text-slate-500 text-xs uppercase tracking-wider">
               <th className="p-4 font-semibold">{lang === 'EN' ? 'Applicant' : 'আবেদনকারী'}</th>
               <th className="p-4 font-semibold">{lang === 'EN' ? 'Program' : 'প্রোগ্রাম'}</th>
               <th className="p-4 font-semibold">{lang === 'EN' ? 'GPA' : 'জিপিএ'}</th>
@@ -112,20 +129,20 @@ export function Applications({ lang, applications, setApplications }: Applicatio
               </tr>
             ) : (
               filteredApps.map((app) => (
-                <tr key={app.applicationID} className="hover:bg-slate-50/80 transition-colors">
+                <tr key={app.applicationID} className="hover:bg-slate-50 dark:bg-slate-800/80 transition-colors">
                   <td className="p-4">
-                    <div className="font-bold text-slate-800">{app.applicantName}</div>
+                    <div className="font-bold text-slate-800 dark:text-slate-200">{app.applicantName}</div>
                     <div className="text-xs text-slate-500 flex items-center gap-2 mt-0.5">
                       <span className="font-mono text-indigo-600 bg-indigo-50 px-1.5 py-0.5 rounded">{app.applicationID}</span>
                       <span>•</span>
                       <span>{app.applicantPhone}</span>
                     </div>
                   </td>
-                  <td className="p-4 text-sm font-medium text-slate-700">
+                  <td className="p-4 text-sm font-medium text-slate-700 dark:text-slate-300">
                     {app.selectedProgram}
                   </td>
                   <td className="p-4">
-                    <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-bold bg-slate-100 text-slate-700 border border-slate-200">
+                    <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
                       {app.applicantGpa}
                     </span>
                   </td>
@@ -147,32 +164,41 @@ export function Applications({ lang, applications, setApplications }: Applicatio
                     </span>
                   </td>
                   <td className="p-4 text-right">
-                    {app.status === 'Pending' && (
-                      <div className="flex justify-end gap-2">
+                    <div className="flex items-center justify-end gap-2">
+                      {app.status === 'Pending' && (
+                        <>
+                          <button 
+                            onClick={() => updateStatus(app.applicationID, 'Approved')}
+                            className="p-1.5 text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors tooltip"
+                            title={lang === 'EN' ? "Approve" : "অনুমোদন করুন"}
+                          >
+                            <CheckCircle className="w-5 h-5" />
+                          </button>
+                          <button 
+                            onClick={() => updateStatus(app.applicationID, 'Rejected')}
+                            className="p-1.5 text-rose-600 hover:bg-rose-50 rounded-lg transition-colors tooltip"
+                            title={lang === 'EN' ? "Reject" : "বাতিল করুন"}
+                          >
+                            <XCircle className="w-5 h-5" />
+                          </button>
+                        </>
+                      )}
+                      {app.status !== 'Pending' && (
                         <button 
-                          onClick={() => updateStatus(app.applicationID, 'Approved')}
-                          className="p-1.5 text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors tooltip"
-                          title={lang === 'EN' ? "Approve" : "অনুমোদন করুন"}
+                          onClick={() => updateStatus(app.applicationID, 'Pending')}
+                          className="text-xs text-slate-400 hover:text-indigo-600 font-medium underline transition-colors"
                         >
-                          <CheckCircle className="w-5 h-5" />
+                          {lang === 'EN' ? 'Reset Status' : 'রিসেট করুন'}
                         </button>
-                        <button 
-                          onClick={() => updateStatus(app.applicationID, 'Rejected')}
-                          className="p-1.5 text-rose-600 hover:bg-rose-50 rounded-lg transition-colors tooltip"
-                          title={lang === 'EN' ? "Reject" : "বাতিল করুন"}
-                        >
-                          <XCircle className="w-5 h-5" />
-                        </button>
-                      </div>
-                    )}
-                    {app.status !== 'Pending' && (
+                      )}
                       <button 
-                        onClick={() => updateStatus(app.applicationID, 'Pending')}
-                        className="text-xs text-slate-400 hover:text-indigo-600 font-medium underline transition-colors"
+                        onClick={() => handleDelete(app.applicationID)}
+                        className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors tooltip"
+                        title={lang === 'EN' ? "Delete" : "মুছে ফেলুন"}
                       >
-                        {lang === 'EN' ? 'Reset Status' : 'রিসেট করুন'}
+                        <Trash2 className="w-5 h-5" />
                       </button>
-                    )}
+                    </div>
                   </td>
                 </tr>
               ))

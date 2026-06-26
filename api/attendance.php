@@ -25,16 +25,24 @@ if ($method === 'GET') {
 } elseif ($method === 'POST') {
     $data = json_decode(file_get_contents("php://input"), true);
     
-    if (isset($data['student_id'], $data['date'])) {
+    try {
+        $conn->exec("ALTER TABLE attendance ADD COLUMN user_type VARCHAR(20) DEFAULT 'student'");
+    } catch(PDOException $e) {}
+
+    if (isset($data['student_id']) || isset($data['teacher_id'])) {
+        $userId = $data['student_id'] ?? $data['teacher_id'];
+        $userType = $data['user_type'] ?? (isset($data['teacher_id']) ? 'teacher' : 'student');
+        
         try {
-            $stmt = $conn->prepare("INSERT INTO attendance (student_id, date, time_in, time_out, status, device_id) VALUES (?, ?, ?, ?, ?, ?)");
+            $stmt = $conn->prepare("INSERT INTO attendance (student_id, date, time_in, time_out, status, device_id, user_type) VALUES (?, ?, ?, ?, ?, ?, ?)");
             $stmt->execute([
-                $data['student_id'],
+                $userId,
                 $data['date'],
                 $data['time_in'] ?? null,
                 $data['time_out'] ?? null,
                 $data['status'] ?? 'Present',
-                $data['device_id'] ?? 'Manual'
+                $data['device_id'] ?? 'Manual',
+                $userType
             ]);
             echo json_encode(["status" => "success"]);
         } catch(Exception $e) {

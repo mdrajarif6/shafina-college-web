@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Save, Lock, Phone, Mail, MapPin, AlertTriangle, CheckCircle } from 'lucide-react';
 
 type SettingsProps = {
-  lang: 'EN' | 'BN';
+  lang: "EN" | "BN" | "AR";
   settings: any;
   setSettings: (s: any) => void;
 };
@@ -51,7 +51,7 @@ export function Settings({ lang, settings, setSettings }: SettingsProps) {
     <div className="max-w-4xl mx-auto space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h3 className="font-extrabold text-2xl text-slate-800">
+          <h3 className="font-extrabold text-2xl text-slate-800 dark:text-slate-200">
             {lang === "EN" ? "System Settings" : "সিস্টেম সেটিংস"}
           </h3>
           <p className="text-slate-500 text-sm mt-1">
@@ -63,10 +63,10 @@ export function Settings({ lang, settings, setSettings }: SettingsProps) {
       <form onSubmit={handleSave} className="space-y-6">
         
         {/* Security Settings */}
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+        <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700">
           <div className="flex items-center gap-2 mb-4 pb-2 border-b">
             <Lock className="text-indigo-600 w-5 h-5" />
-            <h4 className="font-bold text-slate-700">Security Settings</h4>
+            <h4 className="font-bold text-slate-700 dark:text-slate-300">Security Settings</h4>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
@@ -77,7 +77,7 @@ export function Settings({ lang, settings, setSettings }: SettingsProps) {
                 required 
                 value={formData.admin_pin} 
                 onChange={handleChange} 
-                className="w-full border border-slate-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none" 
+                className="w-full border border-slate-300 dark:border-slate-600 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none" 
               />
               <p className="text-xs text-slate-400 mt-1">This PIN is required to unlock the Admin Dashboard.</p>
             </div>
@@ -87,7 +87,7 @@ export function Settings({ lang, settings, setSettings }: SettingsProps) {
                 name="maintenance_mode"
                 value={formData.maintenance_mode} 
                 onChange={handleChange} 
-                className="w-full border border-slate-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none bg-white"
+                className="w-full border border-slate-300 dark:border-slate-600 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none bg-white dark:bg-slate-900"
               >
                 <option value="false">Disabled (Live)</option>
                 <option value="true">Enabled (Offline)</option>
@@ -98,10 +98,10 @@ export function Settings({ lang, settings, setSettings }: SettingsProps) {
         </div>
 
         {/* Contact Information */}
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+        <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700">
           <div className="flex items-center gap-2 mb-4 pb-2 border-b">
             <Phone className="text-indigo-600 w-5 h-5" />
-            <h4 className="font-bold text-slate-700">College Contact Info</h4>
+            <h4 className="font-bold text-slate-700 dark:text-slate-300">College Contact Info</h4>
           </div>
           <p className="text-xs text-slate-500 mb-4">Updating these fields will automatically change the contact information displayed on the public website header and footer.</p>
           
@@ -116,7 +116,7 @@ export function Settings({ lang, settings, setSettings }: SettingsProps) {
                   required 
                   value={formData.contact_phone} 
                   onChange={handleChange} 
-                  className="w-full pl-9 pr-3 py-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none" 
+                  className="w-full pl-9 pr-3 py-2.5 border border-slate-300 dark:border-slate-600 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none" 
                 />
               </div>
             </div>
@@ -130,7 +130,7 @@ export function Settings({ lang, settings, setSettings }: SettingsProps) {
                   required 
                   value={formData.contact_email} 
                   onChange={handleChange} 
-                  className="w-full pl-9 pr-3 py-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none" 
+                  className="w-full pl-9 pr-3 py-2.5 border border-slate-300 dark:border-slate-600 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none" 
                 />
               </div>
             </div>
@@ -144,7 +144,7 @@ export function Settings({ lang, settings, setSettings }: SettingsProps) {
                   required 
                   value={formData.contact_address} 
                   onChange={handleChange} 
-                  className="w-full pl-9 pr-3 py-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none" 
+                  className="w-full pl-9 pr-3 py-2.5 border border-slate-300 dark:border-slate-600 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none" 
                 />
               </div>
             </div>
@@ -152,7 +152,7 @@ export function Settings({ lang, settings, setSettings }: SettingsProps) {
         </div>
 
         {/* Save Button */}
-        <div className="flex items-center justify-end gap-4 pt-4 border-t border-slate-200">
+        <div className="flex items-center justify-end gap-4 pt-4 border-t border-slate-200 dark:border-slate-700">
           {saveStatus === 'success' && (
             <span className="flex items-center gap-1.5 text-emerald-600 font-semibold text-sm">
               <CheckCircle className="w-4 h-4" /> Settings Saved!

@@ -11,7 +11,7 @@ export type Student = {
 };
 
 type StudentsProps = {
-  lang: 'EN' | 'BN';
+  lang: "EN" | "BN" | "AR";
   students: Student[];
   setStudents: (students: Student[]) => void;
 };
@@ -88,7 +88,7 @@ export function Students({ lang, students, setStudents }: StudentsProps) {
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <h3 className="font-extrabold text-2xl text-slate-800">
+          <h3 className="font-extrabold text-2xl text-slate-800 dark:text-slate-200">
             {lang === "EN" ? "Student Directory" : "শিক্ষার্থী তালিকা"}
           </h3>
           <p className="text-slate-500 text-sm mt-1">
@@ -106,8 +106,8 @@ export function Students({ lang, students, setStudents }: StudentsProps) {
       </div>
 
       {showAddForm && (
-        <form onSubmit={handleAddStudent} className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 space-y-4">
-          <h4 className="font-bold text-slate-700 border-b pb-2 mb-4">Add New Student Manually</h4>
+        <form onSubmit={handleAddStudent} className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 space-y-4">
+          <h4 className="font-bold text-slate-700 dark:text-slate-300 border-b pb-2 mb-4">Add New Student Manually</h4>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <label className="block text-xs font-semibold text-slate-600 mb-1">Full Name</label>
@@ -119,7 +119,7 @@ export function Students({ lang, students, setStudents }: StudentsProps) {
             </div>
             <div>
               <label className="block text-xs font-semibold text-slate-600 mb-1">Program</label>
-              <select value={newProgram} onChange={e => setNewProgram(e.target.value)} className="w-full border rounded-lg p-2 text-sm bg-white">
+              <select value={newProgram} onChange={e => setNewProgram(e.target.value)} className="w-full border rounded-lg p-2 text-sm bg-white dark:bg-slate-900">
                 <option value="HSC - Science">HSC - Science</option>
                 <option value="HSC - Commerce">HSC - Commerce</option>
                 <option value="HSC - Humanities">HSC - Humanities</option>
@@ -129,14 +129,14 @@ export function Students({ lang, students, setStudents }: StudentsProps) {
             </div>
           </div>
           <div className="flex justify-end gap-3 mt-4">
-            <button type="button" onClick={() => setShowAddForm(false)} className="px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-100 rounded-lg">Cancel</button>
+            <button type="button" onClick={() => setShowAddForm(false)} className="px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-100 dark:bg-slate-800 rounded-lg">Cancel</button>
             <button type="submit" className="bg-indigo-600 text-white px-4 py-2 text-sm font-semibold rounded-lg hover:bg-indigo-700">Save Student</button>
           </div>
         </form>
       )}
 
       {/* Filters and Search */}
-      <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-col sm:flex-row gap-4">
+      <div className="bg-white dark:bg-slate-900 p-4 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 flex flex-col sm:flex-row gap-4">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5" />
           <input 
@@ -144,7 +144,7 @@ export function Students({ lang, students, setStudents }: StudentsProps) {
             placeholder={lang === "EN" ? "Search by Name, ID, or Phone..." : "নাম, আইডি বা ফোন নম্বর দিয়ে খুঁজুন..."}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+            className="w-full pl-10 pr-4 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
           />
         </div>
         <div className="flex items-center gap-2">
@@ -152,7 +152,7 @@ export function Students({ lang, students, setStudents }: StudentsProps) {
           <select 
             value={filterProgram}
             onChange={(e) => setFilterProgram(e.target.value)}
-            className="bg-slate-50 border border-slate-200 rounded-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 font-medium text-slate-700"
+            className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 font-medium text-slate-700 dark:text-slate-300"
           >
             <option value="All">All Programs</option>
             <option value="HSC">HSC Only</option>
@@ -163,10 +163,10 @@ export function Students({ lang, students, setStudents }: StudentsProps) {
       </div>
 
       {/* Students Data Table */}
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+      <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm whitespace-nowrap">
-            <thead className="bg-slate-50 border-b border-slate-200 text-slate-500">
+            <thead className="bg-slate-50 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 text-slate-500">
               <tr>
                 <th className="px-6 py-4 font-semibold">Student ID</th>
                 <th className="px-6 py-4 font-semibold">Name</th>
@@ -179,13 +179,13 @@ export function Students({ lang, students, setStudents }: StudentsProps) {
             <tbody className="divide-y divide-slate-100">
               {filteredStudents.length > 0 ? (
                 filteredStudents.map((student) => (
-                  <tr key={student.studentID} className="hover:bg-slate-50/50 transition-colors">
+                  <tr key={student.studentID} className="hover:bg-slate-50 dark:bg-slate-800/50 transition-colors">
                     <td className="px-6 py-4">
-                      <span className="font-mono text-xs font-bold text-slate-600 bg-slate-100 px-2 py-1 rounded">
+                      <span className="font-mono text-xs font-bold text-slate-600 bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded">
                         {student.studentID}
                       </span>
                     </td>
-                    <td className="px-6 py-4 font-bold text-slate-800">
+                    <td className="px-6 py-4 font-bold text-slate-800 dark:text-slate-200">
                       {student.name}
                     </td>
                     <td className="px-6 py-4 text-slate-600">
@@ -198,7 +198,7 @@ export function Students({ lang, students, setStudents }: StudentsProps) {
                       <span className={`px-2.5 py-1 rounded-md text-[10px] font-bold uppercase ${
                         student.status === 'Active' ? 'bg-emerald-100 text-emerald-700' :
                         student.status === 'Alumni' ? 'bg-blue-100 text-blue-700' :
-                        'bg-slate-100 text-slate-700'
+                        'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300'
                       }`}>
                         {student.status}
                       </span>

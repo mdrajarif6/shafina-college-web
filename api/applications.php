@@ -1,6 +1,6 @@
 <?php
 header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Methods: GET, POST, PUT, OPTIONS");
+header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type");
 header("Content-Type: application/json");
 
@@ -93,6 +93,21 @@ if ($method === 'GET') {
     } else {
         http_response_code(400);
         echo json_encode(["error" => "Invalid data"]);
+    }
+} elseif ($method === 'DELETE') {
+    $id = $_GET['id'] ?? null;
+    if ($id) {
+        try {
+            $stmt = $conn->prepare("DELETE FROM applications WHERE application_id = ?");
+            $stmt->execute([$id]);
+            echo json_encode(["status" => "success"]);
+        } catch(Exception $e) {
+            http_response_code(500);
+            echo json_encode(["error" => $e->getMessage()]);
+        }
+    } else {
+        http_response_code(400);
+        echo json_encode(["error" => "Missing ID"]);
     }
 } else {
     http_response_code(405);

@@ -12,7 +12,7 @@ export interface AttendanceRecord {
 }
 
 interface AttendanceProps {
-  lang: 'EN' | 'BN';
+  lang: "EN" | "BN" | "AR";
   attendance: AttendanceRecord[];
   setAttendance: (records: AttendanceRecord[]) => void;
 }
@@ -82,10 +82,10 @@ export function Attendance({ lang, attendance, setAttendance }: AttendanceProps)
   );
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden font-sans">
-      <div className="p-6 border-b border-slate-200 bg-slate-50/50 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden font-sans">
+      <div className="p-6 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold text-slate-800 flex items-center gap-2">
+          <h2 className="text-xl font-bold text-slate-800 dark:text-slate-200 flex items-center gap-2">
             <Fingerprint className="w-6 h-6 text-indigo-500" />
             {lang === 'EN' ? 'Biometric Attendance' : 'বায়োমেট্রিক উপস্থিতি'}
           </h2>
@@ -100,7 +100,7 @@ export function Attendance({ lang, attendance, setAttendance }: AttendanceProps)
             <input 
               type="text" 
               placeholder={lang === 'EN' ? "Search ID or Date (YYYY-MM-DD)..." : "আইডি বা তারিখ খুঁজুন..."}
-              className="pl-9 pr-4 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none w-full sm:w-64"
+              className="pl-9 pr-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none w-full sm:w-64"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -116,23 +116,23 @@ export function Attendance({ lang, attendance, setAttendance }: AttendanceProps)
       </div>
 
       {showAddForm && (
-        <div className="p-6 border-b border-slate-200 bg-indigo-50/50">
+        <div className="p-6 border-b border-slate-200 dark:border-slate-700 bg-indigo-50/50">
           <form onSubmit={handleAddAttendance} className="grid grid-cols-1 md:grid-cols-5 gap-4">
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">{lang === 'EN' ? 'Student ID' : 'স্টুডেন্ট আইডি'}</label>
-              <input type="text" required value={studentId} onChange={e => setStudentId(e.target.value)} className="w-full p-2 border border-slate-300 rounded-lg text-sm" placeholder="STU-2026-001" />
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">{lang === 'EN' ? 'Student ID' : 'স্টুডেন্ট আইডি'}</label>
+              <input type="text" required value={studentId} onChange={e => setStudentId(e.target.value)} className="w-full p-2 border border-slate-300 dark:border-slate-600 rounded-lg text-sm" placeholder="STU-2026-001" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">{lang === 'EN' ? 'Date' : 'তারিখ'}</label>
-              <input type="date" required value={date} onChange={e => setDate(e.target.value)} className="w-full p-2 border border-slate-300 rounded-lg text-sm" />
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">{lang === 'EN' ? 'Date' : 'তারিখ'}</label>
+              <input type="date" required value={date} onChange={e => setDate(e.target.value)} className="w-full p-2 border border-slate-300 dark:border-slate-600 rounded-lg text-sm" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">{lang === 'EN' ? 'Time In' : 'প্রবেশের সময়'}</label>
-              <input type="text" value={timeIn} onChange={e => setTimeIn(e.target.value)} className="w-full p-2 border border-slate-300 rounded-lg text-sm" placeholder="08:00 AM" />
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">{lang === 'EN' ? 'Time In' : 'প্রবেশের সময়'}</label>
+              <input type="text" value={timeIn} onChange={e => setTimeIn(e.target.value)} className="w-full p-2 border border-slate-300 dark:border-slate-600 rounded-lg text-sm" placeholder="08:00 AM" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">{lang === 'EN' ? 'Time Out' : 'প্রস্থানের সময়'}</label>
-              <input type="text" value={timeOut} onChange={e => setTimeOut(e.target.value)} className="w-full p-2 border border-slate-300 rounded-lg text-sm" placeholder="04:00 PM" />
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">{lang === 'EN' ? 'Time Out' : 'প্রস্থানের সময়'}</label>
+              <input type="text" value={timeOut} onChange={e => setTimeOut(e.target.value)} className="w-full p-2 border border-slate-300 dark:border-slate-600 rounded-lg text-sm" placeholder="04:00 PM" />
             </div>
             <div className="flex items-end">
               <button type="submit" className="w-full bg-indigo-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-indigo-700 transition-colors">
@@ -146,7 +146,7 @@ export function Attendance({ lang, attendance, setAttendance }: AttendanceProps)
       <div className="overflow-x-auto">
         <table className="w-full text-left border-collapse">
           <thead>
-            <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 text-xs uppercase tracking-wider">
+            <tr className="bg-slate-50 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 text-slate-500 text-xs uppercase tracking-wider">
               <th className="p-4 font-semibold">{lang === 'EN' ? 'Date' : 'তারিখ'}</th>
               <th className="p-4 font-semibold">{lang === 'EN' ? 'Student ID' : 'স্টুডেন্ট আইডি'}</th>
               <th className="p-4 font-semibold">{lang === 'EN' ? 'Time In' : 'প্রবেশের সময়'}</th>
@@ -164,8 +164,8 @@ export function Attendance({ lang, attendance, setAttendance }: AttendanceProps)
               </tr>
             ) : (
               filteredRecords.map((record) => (
-                <tr key={record.id} className="hover:bg-slate-50/80 transition-colors">
-                  <td className="p-4 font-medium text-slate-700 flex items-center gap-2">
+                <tr key={record.id} className="hover:bg-slate-50 dark:bg-slate-800/80 transition-colors">
+                  <td className="p-4 font-medium text-slate-700 dark:text-slate-300 flex items-center gap-2">
                     <Calendar className="w-4 h-4 text-slate-400" />
                     {record.date}
                   </td>
@@ -179,7 +179,7 @@ export function Attendance({ lang, attendance, setAttendance }: AttendanceProps)
                     {record.time_out || '--:--'}
                   </td>
                   <td className="p-4 text-sm text-slate-500">
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100">
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 dark:bg-slate-800">
                       {record.device_id}
                     </span>
                   </td>

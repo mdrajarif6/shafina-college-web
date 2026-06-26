@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { PlusCircle, Check, Trash2, Calendar } from 'lucide-react';
 
-export function ManageNotices({ lang, notices, setNotices }: { lang: 'EN' | 'BN', notices: any[], setNotices: (n: any[]) => void }) {
+export function ManageNotices({ lang, notices, setNotices }: { lang: "EN" | "BN" | "AR", notices: any[], setNotices: (n: any[]) => void }) {
   const [adminNoticeTitleEN, setAdminNoticeTitleEN] = useState("");
   const [adminNoticeTitleBN, setAdminNoticeTitleBN] = useState("");
   const [adminNoticeContentEN, setAdminNoticeContentEN] = useState("");
@@ -79,13 +79,13 @@ export function ManageNotices({ lang, notices, setNotices }: { lang: 'EN' | 'BN'
   return (
     <div className="space-y-8">
       {/* Create Notice Form */}
-      <div className="bg-white border border-slate-200 p-8 rounded-2xl shadow-sm">
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 p-8 rounded-2xl shadow-sm">
         <div className="flex items-center gap-3 mb-6 border-b border-slate-100 pb-4">
           <div className="p-2 bg-indigo-50 text-indigo-600 rounded-lg">
             <PlusCircle className="w-5 h-5" />
           </div>
           <div>
-            <h3 className="font-extrabold text-lg text-slate-800">
+            <h3 className="font-extrabold text-lg text-slate-800 dark:text-slate-200">
               {lang === "EN" ? "Publish New Notice" : "নতুন নোটিশ প্রকাশ করুন"}
             </h3>
             <p className="text-sm text-slate-500">
@@ -104,57 +104,57 @@ export function ManageNotices({ lang, notices, setNotices }: { lang: 'EN' | 'BN'
         <form onSubmit={handleAddNotice} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-bold text-slate-700 mb-2">Notice Title (English) *</label>
+              <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Notice Title (English) *</label>
               <input
                 type="text"
                 required
                 placeholder="e.g. Distribution of HSC Admit Cards 2026"
                 value={adminNoticeTitleEN}
                 onChange={(e) => setAdminNoticeTitleEN(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
+                className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
               />
             </div>
             <div>
-              <label className="block text-sm font-bold text-slate-700 mb-2">নোটিশ শিরোনাম (বাংলায়) *</label>
+              <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">নোটিশ শিরোনাম (বাংলায়) *</label>
               <input
                 type="text"
                 required
                 placeholder="যেমন: ২০২৬ সালের এইচএসসি পরীক্ষার প্রবেশপত্র বিতরণ"
                 value={adminNoticeTitleBN}
                 onChange={(e) => setAdminNoticeTitleBN(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
+                className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
               />
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-bold text-slate-700 mb-2">Detailed Content (English) *</label>
+              <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Detailed Content (English) *</label>
               <textarea
                 required
                 rows={4}
                 placeholder="Write full detailed english text here..."
                 value={adminNoticeContentEN}
                 onChange={(e) => setAdminNoticeContentEN(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all resize-none"
+                className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all resize-none"
               ></textarea>
             </div>
             <div>
-              <label className="block text-sm font-bold text-slate-700 mb-2">বিস্তারিত বার্তা (বাংলায়) *</label>
+              <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">বিস্তারিত বার্তা (বাংলায়) *</label>
               <textarea
                 required
                 rows={4}
                 placeholder="নোটিশের বিস্তারিত বিবরণ বাংলায় লিখুন..."
                 value={adminNoticeContentBN}
                 onChange={(e) => setAdminNoticeContentBN(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all resize-none"
+                className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all resize-none"
               ></textarea>
             </div>
           </div>
 
           <div className="flex flex-col sm:flex-row items-center justify-between gap-6 pt-4 border-t border-slate-100">
             <div className="flex items-center gap-4 w-full sm:w-auto">
-              <label className="font-bold text-slate-700 text-sm">Category:</label>
+              <label className="font-bold text-slate-700 dark:text-slate-300 text-sm">Category:</label>
               <div className="flex flex-wrap gap-2">
                 {["general", "exam", "admission", "holiday"].map((cat) => (
                   <button
@@ -164,7 +164,7 @@ export function ManageNotices({ lang, notices, setNotices }: { lang: 'EN' | 'BN'
                     className={`px-4 py-2 rounded-lg border text-xs font-bold capitalize cursor-pointer transition-all ${
                       adminNoticeCategory === cat 
                         ? "bg-indigo-600 text-white border-indigo-600 shadow-md" 
-                        : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50 hover:border-slate-300"
+                        : "bg-white dark:bg-slate-900 text-slate-600 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:bg-slate-800 hover:border-slate-300 dark:border-slate-600"
                     }`}
                   >
                     {cat}
@@ -185,9 +185,9 @@ export function ManageNotices({ lang, notices, setNotices }: { lang: 'EN' | 'BN'
       </div>
 
       {/* Existing Notices Table */}
-      <div className="bg-white border border-slate-200 p-8 rounded-2xl shadow-sm">
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 p-8 rounded-2xl shadow-sm">
         <div className="flex items-center gap-3 mb-6">
-          <h3 className="font-extrabold text-lg text-slate-800">
+          <h3 className="font-extrabold text-lg text-slate-800 dark:text-slate-200">
             {lang === "EN" ? "Active Notices" : "সক্রিয় নোটিশ সমূহ"}
           </h3>
         </div>
@@ -204,14 +204,14 @@ export function ManageNotices({ lang, notices, setNotices }: { lang: 'EN' | 'BN'
             </thead>
             <tbody className="divide-y divide-slate-100">
               {notices.map((notice) => (
-                <tr key={notice.id} className="hover:bg-slate-50 transition-colors">
+                <tr key={notice.id} className="hover:bg-slate-50 dark:bg-slate-800 transition-colors">
                   <td className="py-4">
                     <span className="flex items-center gap-1.5 text-slate-600">
                       <Calendar className="w-4 h-4" />
                       {notice.date}
                     </span>
                   </td>
-                  <td className="py-4 font-semibold text-slate-800">
+                  <td className="py-4 font-semibold text-slate-800 dark:text-slate-200">
                     {lang === 'EN' ? notice.titleEN : notice.titleBN}
                   </td>
                   <td className="py-4">

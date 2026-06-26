@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { X, Download, ShieldCheck, Loader2 } from 'lucide-react';
+import apkVersion from '../../apk-version.json';
 
 interface Release {
   id: number;
@@ -17,7 +18,7 @@ interface Release {
 interface DownloadModalProps {
   isOpen: boolean;
   onClose: () => void;
-  lang: "EN" | "BN";
+  lang: "EN" | "BN" | "AR";
 }
 
 const DownloadModal: React.FC<DownloadModalProps> = ({ isOpen, onClose, lang }) => {
@@ -32,9 +33,26 @@ const DownloadModal: React.FC<DownloadModalProps> = ({ isOpen, onClose, lang }) 
       setLoading(true);
       try {
         const response = await fetch('https://api.github.com/repos/mdrajarif6/shafina-college-web/releases');
-        if (!response.ok) throw new Error('Failed to fetch releases');
-        const data = await response.json();
-        setReleases(data);
+        let data = [];
+        if (response.ok) {
+            data = await response.json();
+        }
+
+        // Add our locally hosted latest APK to the top
+        const localRelease = {
+          id: 999999,
+          tag_name: `v${apkVersion.versionName}`,
+          name: `HJSWC College App v${apkVersion.versionName}`,
+          body: "Latest version including all recent feature updates.",
+          published_at: new Date().toISOString(),
+          assets: [{
+            browser_download_url: `/${apkVersion.filename}`,
+            size: 15500000,
+            name: apkVersion.filename
+          }]
+        };
+
+        setReleases([localRelease, ...data]);
         setError(null);
       } catch (err) {
         setError(lang === "EN" ? "Failed to load versions. Please try again." : "ভার্সন লোড করতে ব্যর্থ হয়েছে। দয়া করে আবার চেষ্টা করুন।");
@@ -129,6 +147,9 @@ const DownloadModal: React.FC<DownloadModalProps> = ({ isOpen, onClose, lang }) 
                       {apkAsset ? (
                         <a 
                           href={apkAsset.browser_download_url}
+                          download={apkAsset.name}
+                          target="_blank"
+                          rel="noopener noreferrer"
                           className={`flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg font-medium transition-colors whitespace-nowrap ${
                             isLatest 
                               ? 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-900/20' 

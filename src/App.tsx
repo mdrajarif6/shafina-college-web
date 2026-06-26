@@ -23,7 +23,6 @@ import {
   Sparkles,
   ArrowRight,
   BookMarked,
-  BookOpen,
   Menu,
   X
 } from "lucide-react";
@@ -32,6 +31,7 @@ import {
 import {
   contentEN,
   contentBN,
+  contentAR,
   hscGroups,
   degreeGroups,
   honoursCourses,
@@ -44,6 +44,7 @@ import { DashboardLayout } from "./components/Dashboard/DashboardLayout";
 import { AdminLogin } from "./components/Dashboard/AdminLogin";
 import { Application } from "./components/Dashboard/Applications";
 import { Student } from "./components/Dashboard/Students";
+import { Teacher } from "./components/Dashboard/Teachers";
 import { AttendanceRecord } from "./components/Dashboard/Attendance";
 import { StudentPortal } from "./components/StudentPortal/StudentPortal";
 import { TeacherPortal } from "./components/TeacherPortal/TeacherPortal";
@@ -51,14 +52,43 @@ import DownloadModal from "./components/DownloadModal";
 
 export default function App() {
   // Language State
-  const [lang, setLang] = useState<"EN" | "BN">("BN"); // Default to BN (Bengali) for authentic feel, can toggle to EN
-  const t: CollegeTranslation = lang === "EN" ? contentEN : contentBN;
+  const [lang, setLang] = useState<"EN" | "BN" | "AR">("BN");
+  const t: CollegeTranslation = lang === "EN" ? contentEN : (lang === "AR" ? contentAR : contentBN);
   const [isDownloadModalOpen, setIsDownloadModalOpen] = useState(false);
+
+  // Theme State
+  const [theme, setTheme] = useState<"light" | "dark" | "system">(() => {
+    return (localStorage.getItem("theme") as "light" | "dark" | "system") || "system";
+  });
+
+  // Apply Theme and RTL
+  React.useEffect(() => {
+    const root = window.document.documentElement;
+    const isDark =
+      theme === "dark" ||
+      (theme === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches);
+
+    if (isDark) {
+      root.classList.add("dark");
+    } else {
+      root.classList.remove("dark");
+    }
+
+    if (theme !== "system") {
+      localStorage.setItem("theme", theme);
+    } else {
+      localStorage.removeItem("theme");
+    }
+  }, [theme]);
+
+  React.useEffect(() => {
+    document.documentElement.dir = lang === "AR" ? "rtl" : "ltr";
+  }, [lang]);
 
   const handleInstallClick = async () => {
     // Detect iOS devices (iPhone, iPad, iPod)
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
-    
+
     if (isIOS) {
       // iOS users cannot install APKs, so we must rely on PWA instructions
       alert(lang === "EN" ? "To install on iOS: tap the Share button (square with an arrow pointing up) at the bottom of your screen, then select 'Add to Home Screen'." : "iOS এ ইন্সটল করতে: স্ক্রিনের নিচে Share বাটনে ট্যাপ করুন এবং 'Add to Home Screen' নির্বাচন করুন।");
@@ -72,6 +102,7 @@ export default function App() {
   const [notices, setNotices] = useState<any[]>([]);
   const [applicationsList, setApplicationsList] = useState<Application[]>([]);
   const [studentsList, setStudentsList] = useState<Student[]>([]);
+  const [teachersList, setTeachersList] = useState<Teacher[]>([]);
   const [results, setResults] = useState<any[]>([]);
   const [attendance, setAttendance] = useState<AttendanceRecord[]>([]);
   const [settings, setSettings] = useState<any>({
@@ -107,6 +138,14 @@ export default function App() {
         if (!data.error) setStudentsList(data);
       })
       .catch(err => console.error("Error fetching students:", err));
+
+    // Fetch teachers
+    fetch('api/teachers.php')
+      .then(res => res.json())
+      .then(data => {
+        if (!data.error && data.teachers) setTeachersList(data.teachers);
+      })
+      .catch(err => console.error("Error fetching teachers:", err));
 
     // Fetch results
     fetch('api/results.php')
@@ -195,7 +234,7 @@ export default function App() {
   const handleResultSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!resultReg || !resultRoll) return;
-    
+
     setResultLoading(true);
     setResultError("");
     setResultData(null);
@@ -225,7 +264,7 @@ export default function App() {
   const [chatMessages, setChatMessages] = useState<Array<{ sender: "user" | "bot"; text: string }>>([
     {
       sender: "bot",
-      text: lang === "EN" 
+      text: lang === "EN"
         ? "Hello! Welcome to Haji Jamir Uddin Shafina Women's Degree College Help Desk. Ask me anything about 'admission', 'courses', 'location', 'hostel', or 'scholarship'!"
         : "আসসালামু আলাইকুম! হাজী জমির উদ্দীন শাফিনা মহিলা ডিগ্রি কলেজের তথ্য সহায়তা কেন্দ্রে আপনাকে স্বাগতম। ভর্তি, কোর্সসমূহ, কলেজ হোস্টেল, বৃত্তির সুযোগ অথবা লোকেশন জানতে এখানে প্রশ্ন করুন।"
     }
@@ -237,11 +276,6 @@ export default function App() {
   const [contactMessage, setContactMessage] = useState("");
   const [contactSubmitted, setContactSubmitted] = useState(false);
   const [submittedQueries, setSubmittedQueries] = useState<Array<{ name: string; msg: string; date: string }>>([]);
-
-  // Language toggle helper
-  const toggleLanguage = () => {
-    setLang((prev) => (prev === "EN" ? "BN" : "EN"));
-  };
 
   // Eligibility Checker Action
   const calculateEligibility = (e: React.FormEvent) => {
@@ -361,32 +395,32 @@ export default function App() {
         status: 'Pending'
       }),
     })
-    .then(res => res.json())
-    .then(response => {
-      if (!response.error) {
-        // Update local state to reflect instantly
-        setApplicationsList(prev => [
-          {
-            applicationID,
-            applicantName,
-            applicantPhone,
-            selectedProgram,
-            applicantGpa,
-            dateSubmitted,
-            status: "Pending" as const
-          },
-          ...prev
-        ]);
-        setSubmittedData(data);
-        setIsSubmitted(true);
-      } else {
-        alert("Failed to submit application to database.");
-      }
-    })
-    .catch(err => {
-      console.error(err);
-      alert("Error submitting application.");
-    });
+      .then(res => res.json())
+      .then(response => {
+        if (!response.error) {
+          // Update local state to reflect instantly
+          setApplicationsList(prev => [
+            {
+              applicationID,
+              applicantName,
+              applicantPhone,
+              selectedProgram,
+              applicantGpa,
+              dateSubmitted,
+              status: "Pending" as const
+            },
+            ...prev
+          ]);
+          setSubmittedData(data);
+          setIsSubmitted(true);
+        } else {
+          alert("Failed to submit application to database.");
+        }
+      })
+      .catch(err => {
+        console.error(err);
+        alert("Error submitting application.");
+      });
   };
 
   // Reset Application form
@@ -528,6 +562,8 @@ export default function App() {
         setApplications={setApplicationsList}
         students={studentsList}
         setStudents={setStudentsList}
+        teachers={teachersList}
+        setTeachers={setTeachersList}
         results={results}
         setResults={setResults}
         attendance={attendance}
@@ -543,13 +579,13 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-800 font-bilingual flex flex-col selection:bg-rose-600 selection:text-white">
-      <DownloadModal 
-        isOpen={isDownloadModalOpen} 
-        onClose={() => setIsDownloadModalOpen(false)} 
-        lang={lang} 
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-200 font-bilingual flex flex-col selection:bg-rose-600 selection:text-white">
+      <DownloadModal
+        isOpen={isDownloadModalOpen}
+        onClose={() => setIsDownloadModalOpen(false)}
+        lang={lang}
       />
-      
+
       {/* TOP SCROLLING TICKER */}
       <div className="bg-rose-950 text-white py-2 text-xs md:text-sm border-b border-rose-900/50 relative overflow-hidden z-20">
         <div className="max-w-7xl mx-auto px-4 flex items-center justify-between">
@@ -560,7 +596,7 @@ export default function App() {
           </div>
           <div className="flex-1 overflow-hidden mx-4 relative h-5">
             <span className="absolute whitespace-nowrap animate-marquee font-medium text-rose-100">
-              {lang === "EN" 
+              {lang === "EN"
                 ? `★ [March 2026] HSC Practical Exams will take place from March 18th to March 24th. ★ National University Degree 1st Year Exam postponed to April 5th, 2026. ★ Admission open for Session 2026-27!`
                 : `★ [মার্চ ২০২৬] উচ্চ মাধ্যমিক ব্যবহারিক পরীক্ষা আগামী ১৮ই মার্চ থেকে ২৪শে মার্চ পর্যন্ত অনুষ্ঠিত হবে। ★ জাতীয় বিশ্ববিদ্যালয় ডিগ্রী ১ম বর্ষ পরীক্ষা স্থগিত করা হয়েছে, সংশোধিত সূচি অনুযায়ী আগামী ৫ই এপ্রিল থেকে পরীক্ষা অনুষ্ঠিত হবে। ★ নতুন সেশনে ভর্তি চলছে!`}
             </span>
@@ -593,45 +629,57 @@ export default function App() {
             <span className="hidden lg:inline-block text-slate-400">
               {lang === "EN" ? "Established: 1995" : "স্থাপিত: ১৯৯৫ খ্রিষ্টাব্দ"}
             </span>
-            
-            {/* MULTILINGUAL LANGUAGE BUTTON */}
-            <button
-              onClick={toggleLanguage}
-              className="bg-rose-600 hover:bg-rose-700 text-white font-bold px-3 py-1 rounded flex items-center gap-1.5 transition-all cursor-pointer shadow-sm hover:scale-105"
-              title={lang === "EN" ? "বাংলায় দেখুন" : "View in English"}
-            >
-              <Sparkles className="w-3 h-3 text-yellow-300" />
-              <span className="text-xs">{t.languageLabel}</span>
-            </button>
+
+            {/* MULTILINGUAL LANGUAGE & THEME SELECTORS */}
+            <div className="flex items-center gap-2">
+              <select
+                value={lang}
+                onChange={(e) => setLang(e.target.value as "EN" | "BN" | "AR")}
+                className="bg-slate-800 text-white border border-slate-700 rounded px-2 py-1 text-xs outline-none cursor-pointer hover:bg-slate-700 transition-colors"
+              >
+                <option value="EN">EN</option>
+                <option value="BN">বাং</option>
+                <option value="AR">عربي</option>
+              </select>
+              <select
+                value={theme}
+                onChange={(e) => setTheme(e.target.value as "light" | "dark" | "system")}
+                className="bg-slate-800 text-white border border-slate-700 rounded px-2 py-1 text-xs outline-none cursor-pointer hover:bg-slate-700 transition-colors"
+              >
+                <option value="light">{lang === "BN" ? "লাইট" : lang === "AR" ? "مضيئ" : "Light"}</option>
+                <option value="dark">{lang === "BN" ? "ডার্ক" : lang === "AR" ? "مظلم" : "Dark"}</option>
+                <option value="system">{lang === "BN" ? "অটো" : lang === "AR" ? "تلقائي" : "Auto"}</option>
+              </select>
+            </div>
           </div>
         </div>
       </header>
 
       {/* MAIN LOGO HEADER AND HERO BRAND */}
-      <div className="bg-white border-b border-slate-200 py-5 sticky top-0 z-30 shadow-md">
+      <div className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700 py-5 sticky top-0 z-30 shadow-md">
         <div className="max-w-7xl mx-auto px-4 flex flex-col lg:flex-row justify-between items-center gap-4">
-          
+
           {/* Logo Brand Brand */}
           <div className="flex items-center gap-3.5 text-center lg:text-left">
             <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-gradient-to-tr from-rose-700 via-pink-600 to-rose-900 p-0.5 flex items-center justify-center shadow-md">
-              <div className="w-full h-full bg-white rounded-full flex flex-col items-center justify-center relative overflow-hidden">
+              <div className="w-full h-full bg-white dark:bg-slate-900 rounded-full flex flex-col items-center justify-center relative overflow-hidden">
                 <img src="/college-logo.png" alt="HJSWC Logo" className="w-full h-full object-contain p-1" />
               </div>
             </div>
-            
+
             <div>
               <div className="flex flex-wrap items-center gap-2 justify-center lg:justify-start">
                 <span className="bg-rose-100 text-rose-800 text-[10px] font-bold px-2 py-0.5 rounded-full border border-rose-200">
                   {lang === "EN" ? "NU Affiliated" : "জাতীয় বিশ্ববিদ্যালয় অধিভুক্ত"}
                 </span>
-                <span className="bg-slate-100 text-slate-700 text-[10px] font-bold px-2 py-0.5 rounded-full border border-slate-200">
+                <span className="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-[10px] font-bold px-2 py-0.5 rounded-full border border-slate-200 dark:border-slate-700">
                   {lang === "EN" ? "EIIN: 127037" : "ইআইআইএন: ১২৭০৩৭"}
                 </span>
                 <span className="bg-indigo-100 text-indigo-800 text-[10px] font-bold px-2 py-0.5 rounded-full border border-indigo-200">
                   {lang === "EN" ? "College Code: 1029 / 2567" : "কলেজ কোড: ১০২৯ / ২৫৬৭"}
                 </span>
               </div>
-              <h1 className="text-xl md:text-2xl lg:text-3xl font-extrabold text-slate-900 leading-tight mt-1">
+              <h1 className="text-xl md:text-2xl lg:text-3xl font-extrabold text-slate-900 dark:text-slate-100 leading-tight mt-1">
                 {t.collegeName}
               </h1>
               <p className="text-xs md:text-sm text-slate-500 font-medium mt-0.5 max-w-2xl">
@@ -666,21 +714,21 @@ export default function App() {
         </div>
 
         {/* NAVIGATION LINKS CONTAINER */}
-        <nav className="bg-white border-t border-slate-100 mt-4 relative z-40">
+        <nav className="bg-white dark:bg-slate-900 border-t border-slate-100 mt-4 relative z-40">
           <div className="max-w-7xl mx-auto px-4">
-            
+
             {/* Mobile Menu Toggle */}
             <div className="md:hidden flex justify-between items-center py-2">
               <span className="text-sm font-bold text-slate-600">{lang === "EN" ? "Main Menu" : "মূল মেনু"}</span>
-              <button 
+              <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="p-2 bg-slate-100 rounded-lg text-slate-600 hover:bg-rose-50 hover:text-rose-600 transition-colors"
+                className="p-2 bg-slate-100 dark:bg-slate-800 rounded-lg text-slate-600 hover:bg-rose-50 hover:text-rose-600 transition-colors"
               >
                 {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
               </button>
             </div>
 
-            <div className={`${isMobileMenuOpen ? "flex" : "hidden"} md:flex flex-col md:flex-row flex-wrap justify-center md:justify-start gap-1 py-2 md:py-1`}>
+            <div className={`${isMobileMenuOpen ? "flex" : "hidden"} md:flex flex-col md:flex-row flex-wrap justify-center md:justify-start gap-1 py-2 md:py-1 max-h-[70vh] overflow-y-auto md:max-h-none md:overflow-visible`}>
               {[
                 { id: "home", label: t.navHome },
                 { id: "about", label: t.navAbout },
@@ -689,6 +737,8 @@ export default function App() {
                 { id: "notices", label: t.navNotices },
                 { id: "campus-map", label: t.navCampusMap },
                 { id: "gallery", label: t.navGallery },
+                { id: "student_portal", label: lang === "EN" ? "Student Portal" : "স্টুডেন্ট পোর্টাল" },
+                { id: "teacher_portal", label: lang === "EN" ? "Teacher Portal" : "শিক্ষক পোর্টাল" },
                 { id: "contact", label: t.navContact }
               ].map((tab) => (
                 <button
@@ -698,47 +748,16 @@ export default function App() {
                     setIsMobileMenuOpen(false);
                     document.getElementById(`${tab.id}-section`)?.scrollIntoView({ behavior: "smooth" });
                   }}
-                  className={`w-full md:w-auto text-left md:text-center px-4 md:px-3 py-3 md:py-2 text-sm font-semibold rounded-lg transition-all cursor-pointer ${
-                    activeTab === tab.id
+                  className={`w-full md:w-auto text-left md:text-center px-4 md:px-3 py-3 md:py-2 text-sm font-semibold rounded-lg transition-all cursor-pointer ${activeTab === tab.id
                       ? "bg-rose-50 text-rose-700 border-l-4 md:border-l-0 md:border-b-2 border-rose-600"
                       : tab.id === "dashboard"
-                      ? "bg-slate-900 text-white hover:bg-slate-800 shadow-sm mt-2 md:mt-0"
-                      : "text-slate-600 hover:bg-slate-50 hover:text-rose-600"
-                  }`}
+                        ? "bg-slate-900 text-white hover:bg-slate-800 shadow-sm mt-2 md:mt-0"
+                        : "text-slate-600 hover:bg-slate-50 dark:bg-slate-800 hover:text-rose-600"
+                    }`}
                 >
                   {tab.label}
                 </button>
               ))}
-
-              {/* Portals Dropdown */}
-              <div className="relative group ml-0 md:ml-1 mt-2 md:mt-0 w-full md:w-auto">
-                <button className="w-full md:w-auto justify-between px-4 md:px-3 py-3 md:py-2 text-sm font-semibold rounded-lg transition-all cursor-pointer text-slate-600 hover:bg-slate-50 hover:text-indigo-600 flex items-center gap-1 border border-slate-200 md:border-none">
-                  {lang === "EN" ? "Portals" : "পোর্টাল"}
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
-                </button>
-                <div className="absolute top-full right-0 left-0 md:left-0 mt-1 w-full md:w-48 bg-white rounded-xl shadow-xl border border-slate-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50 overflow-hidden">
-                  <button
-                    onClick={() => {
-                      setActiveTab("student_portal");
-                      setIsMobileMenuOpen(false);
-                      window.scrollTo({ top: 0, behavior: "smooth" });
-                    }}
-                    className="w-full text-left px-4 py-3 text-sm font-semibold text-slate-600 hover:bg-indigo-50 hover:text-indigo-700 border-b border-slate-50 flex items-center gap-2"
-                  >
-                    <BookOpen className="w-4 h-4" /> {lang === "EN" ? "Student Portal" : "স্টুডেন্ট পোর্টাল"}
-                  </button>
-                  <button
-                    onClick={() => {
-                      setActiveTab("teacher_portal");
-                      setIsMobileMenuOpen(false);
-                      window.scrollTo({ top: 0, behavior: "smooth" });
-                    }}
-                    className="w-full text-left px-4 py-3 text-sm font-semibold text-slate-600 hover:bg-rose-50 hover:text-rose-700 flex items-center gap-2"
-                  >
-                    <Users className="w-4 h-4" /> {lang === "EN" ? "Teacher Portal" : "শিক্ষক পোর্টাল"}
-                  </button>
-                </div>
-              </div>
             </div>
           </div>
         </nav>
@@ -746,7 +765,7 @@ export default function App() {
 
       {/* --- HERO SLIDER / MAIN BANNER --- */}
       <section id="home-section" className="relative bg-gradient-to-br from-slate-900 to-rose-950 text-white py-12 md:py-20 overflow-hidden">
-        
+
         {/* Background Decorative Graphic */}
         <div className="absolute inset-0 opacity-15 pointer-events-none">
           <div className="absolute top-10 left-10 w-96 h-96 rounded-full bg-rose-500 blur-3xl"></div>
@@ -756,7 +775,7 @@ export default function App() {
 
         <div className="max-w-7xl mx-auto px-4 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-            
+
             {/* Left Content Column */}
             <div className="lg:col-span-7 space-y-6">
               <div className="inline-flex items-center gap-2 bg-rose-500/20 text-rose-300 border border-rose-400/30 px-3.5 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider">
@@ -765,8 +784,8 @@ export default function App() {
               </div>
 
               <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-white leading-tight">
-                {lang === "EN" 
-                  ? "Build Your Future with Moral Integrity & Modern Skills" 
+                {lang === "EN"
+                  ? "Build Your Future with Moral Integrity & Modern Skills"
                   : "নৈতিক মূল্যবোধ ও আধুনিক দক্ষতায় গড়ুন আপনার ভবিষ্যৎ"}
               </h2>
 
@@ -774,14 +793,14 @@ export default function App() {
                 {lang === "EN" ? t.slogan1 : t.slogan2}
               </p>
 
-              <div className="bg-white/5 border border-white/10 p-4 rounded-xl flex items-center gap-3 backdrop-blur-sm max-w-xl">
+              <div className="bg-white dark:bg-slate-900/5 border border-white/10 p-4 rounded-xl flex items-center gap-3 backdrop-blur-sm max-w-xl">
                 <CheckCircle2 className="w-10 h-10 text-rose-400 shrink-0" />
                 <div>
                   <h4 className="font-bold text-sm text-white">
                     {lang === "EN" ? "Free Textbook & Stipend Support" : "বিনামূল্যে পাঠ্যপুস্তক ও উপবৃত্তি সহায়তা"}
                   </h4>
                   <p className="text-xs text-slate-300">
-                    {lang === "EN" 
+                    {lang === "EN"
                       ? "Provided through Haji Jamir Uddin Shafina Trust Fund to outstanding and needy female candidates."
                       : "হাজী জমির উদ্দীন শাফিনা ট্রাস্ট ফান্ডের পক্ষ থেকে মেধাবী ও অসচ্ছল ছাত্রীদের জন্য বিশেষ আর্থিক বৃত্তি।"}
                   </p>
@@ -820,7 +839,7 @@ export default function App() {
                   <FileText className="w-4 h-4" />
                   <span>{lang === "EN" ? "Notice Feed" : "নোটিশ সমূহ"}</span>
                 </button>
-                
+
                 <button
                   onClick={handleInstallClick}
                   className="bg-emerald-600 hover:bg-emerald-500 border border-emerald-500 text-white font-semibold text-sm px-6 py-3 rounded-xl shadow-[0_0_15px_rgba(16,185,129,0.4)] transition-all cursor-pointer flex items-center gap-2 animate-pulse"
@@ -834,21 +853,21 @@ export default function App() {
             {/* Right Graphic Slide/Image Column */}
             <div className="lg:col-span-5 relative">
               <div className="relative mx-auto max-w-sm lg:max-w-none">
-                
+
                 {/* Background colored blur card */}
                 <div className="absolute -inset-1.5 bg-gradient-to-r from-rose-500 to-indigo-600 rounded-3xl blur opacity-30"></div>
-                
+
                 {/* Main Simulated Image Block */}
                 <div className="relative bg-slate-900 border-2 border-slate-800 rounded-2xl overflow-hidden shadow-2xl p-2.5">
                   <div className="aspect-video sm:aspect-square bg-slate-950 relative rounded-xl overflow-hidden flex items-center justify-center">
-                    
+
                     {/* Visual Collage representing College life */}
-                    <img 
-                      src="https://web.academyims.com/storage/2406112/images/slider/slider_1754817585.webp" 
-                      alt="College Girls Campus life" 
-                      className="absolute inset-0 w-full h-full object-cover opacity-85 hover:scale-105 transition-transform duration-700" 
+                    <img
+                      src="https://web.academyims.com/storage/2406112/images/slider/slider_1754817585.webp"
+                      alt="College Girls Campus life"
+                      className="absolute inset-0 w-full h-full object-cover opacity-85 hover:scale-105 transition-transform duration-700"
                     />
-                    
+
                     {/* Gradient Overlay */}
                     <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent"></div>
 
@@ -888,7 +907,7 @@ export default function App() {
                 </div>
 
                 {/* Extra Stats overlay box */}
-                <div className="absolute -bottom-6 -left-6 bg-white text-slate-900 p-3.5 rounded-xl shadow-xl hidden md:flex items-center gap-3 border border-slate-100 max-w-xs">
+                <div className="absolute -bottom-6 -left-6 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 p-3.5 rounded-xl shadow-xl hidden md:flex items-center gap-3 border border-slate-100 max-w-xs">
                   <div className="w-10 h-10 rounded-full bg-rose-100 text-rose-700 flex items-center justify-center font-bold">
                     96%
                   </div>
@@ -906,10 +925,10 @@ export default function App() {
       </section>
 
       {/* --- QUICK STATS GRID --- */}
-      <section className="bg-white border-y border-slate-200 shadow-sm relative z-10">
+      <section className="bg-white dark:bg-slate-900 border-y border-slate-200 dark:border-slate-700 shadow-sm relative z-10">
         <div className="max-w-7xl mx-auto px-4 py-8">
           <div className="grid grid-cols-2 md:grid-cols-5 gap-6 text-center divide-y md:divide-y-0 md:divide-x divide-slate-100">
-            
+
             <div className="pt-4 md:pt-0">
               <span className="block text-2xl md:text-3.5xl font-extrabold text-rose-600">১,৫০০+</span>
               <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider block mt-1">
@@ -950,25 +969,25 @@ export default function App() {
       </section>
 
       {/* --- ABOUT US / LEADERSHIP SECTION --- */}
-      <section id="about-section" className="py-16 bg-slate-50">
+      <section id="about-section" className="py-16 bg-slate-50 dark:bg-slate-800">
         <div className="max-w-7xl mx-auto px-4">
-          
+
           <div className="text-center max-w-3xl mx-auto mb-12">
             <h2 className="text-2xl md:text-4.5xl font-extrabold text-slate-950">
               {lang === "EN" ? "About Our Institution" : "আমাদের পরিচিতি ও আদর্শ"}
             </h2>
             <div className="w-24 h-1.5 bg-rose-600 mx-auto mt-3 rounded-full"></div>
             <p className="text-slate-600 mt-4 text-sm md:text-base">
-              {lang === "EN" 
+              {lang === "EN"
                 ? "Serving Rajshahi's female students with high secondary and degree level curriculum with a safe, caring, and stimulating environment."
                 : "রাজশাহীর প্রাণকেন্দ্রে নারীদের মানসম্মত ও নৈতিক শিক্ষায় শিক্ষিত করার প্রত্যয়ে প্রতিষ্ঠিত এক অনন্য বিদ্যাপীঠ।"}
             </p>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
-            
+
             {/* CARD 1: PRINCIPAL'S DESK */}
-            <div className="bg-white rounded-2xl shadow-md p-6 md:p-8 border border-slate-100 flex flex-col justify-between">
+            <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-md p-6 md:p-8 border border-slate-100 flex flex-col justify-between">
               <div>
                 <div className="flex items-center gap-4 border-b border-slate-100 pb-5 mb-5">
                   <div className="w-16 h-16 rounded-full bg-rose-100 shrink-0 border-2 border-rose-200 overflow-hidden">
@@ -978,7 +997,7 @@ export default function App() {
                     <span className="text-xs font-bold text-rose-600 uppercase tracking-wider block">
                       {t.principalTitle}
                     </span>
-                    <h3 className="text-lg md:text-xl font-bold text-slate-900 mt-0.5">
+                    <h3 className="text-lg md:text-xl font-bold text-slate-900 dark:text-slate-100 mt-0.5">
                       {t.principalName}
                     </h3>
                     <p className="text-xs text-slate-500">
@@ -995,14 +1014,14 @@ export default function App() {
 
               <div className="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-400">
                 <span>{lang === "EN" ? "Haji Jamir Uddin Shafina Women's College" : "হাজী জমির উদ্দীন শাফিনা মহিলা কলেজ"}</span>
-                <span className="bg-slate-100 text-slate-700 font-bold px-2.5 py-1 rounded">
+                <span className="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold px-2.5 py-1 rounded">
                   {lang === "EN" ? "Principal" : "অধ্যক্ষ"}
                 </span>
               </div>
             </div>
 
             {/* CARD 2: PRESIDENT OF GOVERNING BODY */}
-            <div className="bg-white rounded-2xl shadow-md p-6 md:p-8 border border-slate-100 flex flex-col justify-between">
+            <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-md p-6 md:p-8 border border-slate-100 flex flex-col justify-between">
               <div>
                 <div className="flex items-center gap-4 border-b border-slate-100 pb-5 mb-5">
                   <div className="w-16 h-16 rounded-full bg-indigo-100 shrink-0 border-2 border-indigo-200 overflow-hidden">
@@ -1012,7 +1031,7 @@ export default function App() {
                     <span className="text-xs font-bold text-indigo-600 uppercase tracking-wider block">
                       {t.presidentTitle}
                     </span>
-                    <h3 className="text-lg md:text-xl font-bold text-slate-900 mt-0.5">
+                    <h3 className="text-lg md:text-xl font-bold text-slate-900 dark:text-slate-100 mt-0.5">
                       {t.presidentName}
                     </h3>
                     <p className="text-xs text-slate-500">
@@ -1042,14 +1061,14 @@ export default function App() {
       </section>
 
       {/* --- INTUITIVE ACADEMIC PROGRAMS --- */}
-      <section id="programs-section" className="py-16 bg-white border-t border-slate-200">
+      <section id="programs-section" className="py-16 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-700">
         <div className="max-w-7xl mx-auto px-4">
-          
+
           <div className="text-center max-w-3xl mx-auto mb-12">
             <span className="text-xs font-bold uppercase tracking-wider bg-rose-100 text-rose-800 px-3 py-1 rounded-full">
               {lang === "EN" ? "Academic Levels" : "একাডেমিক স্তরসমূহ"}
             </span>
-            <h2 className="text-2xl md:text-4.5xl font-extrabold text-slate-900 mt-2">
+            <h2 className="text-2xl md:text-4.5xl font-extrabold text-slate-900 dark:text-slate-100 mt-2">
               {t.academicTitle}
             </h2>
             <p className="text-slate-500 mt-3 text-xs md:text-sm">
@@ -1058,14 +1077,14 @@ export default function App() {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            
+
             {/* HSC LEVEL CARD */}
-            <div className="bg-slate-50 rounded-2xl border border-slate-200 overflow-hidden shadow-sm flex flex-col justify-between">
+            <div className="bg-slate-50 dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden shadow-sm flex flex-col justify-between">
               <div className="p-6 md:p-8">
                 <div className="w-12 h-12 bg-rose-600 text-white rounded-xl flex items-center justify-center font-bold text-lg mb-6 shadow-md shadow-rose-100">
                   HSC
                 </div>
-                <h3 className="text-xl font-bold text-slate-900 mb-2">
+                <h3 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-2">
                   {t.hscSection}
                 </h3>
                 <p className="text-xs text-slate-600 mb-6 leading-relaxed">
@@ -1077,14 +1096,14 @@ export default function App() {
                   <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider">
                     {lang === "EN" ? "Available Streams:" : "শাখা সমুহ:"}
                   </h4>
-                  
+
                   {hscGroups.map((group) => (
-                    <div key={group.id} className="bg-white p-3.5 rounded-xl border border-slate-200/80">
+                    <div key={group.id} className="bg-white dark:bg-slate-900 p-3.5 rounded-xl border border-slate-200 dark:border-slate-700/80">
                       <div className="flex justify-between items-center mb-1">
-                        <span className="font-bold text-sm text-slate-900">
+                        <span className="font-bold text-sm text-slate-900 dark:text-slate-100">
                           {lang === "EN" ? group.nameEN : group.nameBN}
                         </span>
-                        <span className="text-[11px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded font-mono">
+                        <span className="text-[11px] bg-slate-100 dark:bg-slate-800 text-slate-600 px-2 py-0.5 rounded font-mono">
                           {group.duration}
                         </span>
                       </div>
@@ -1101,7 +1120,7 @@ export default function App() {
                 </div>
               </div>
 
-              <div className="p-6 bg-slate-100 border-t border-slate-200 flex items-center justify-between">
+              <div className="p-6 bg-slate-100 dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700 flex items-center justify-between">
                 <span className="text-xs text-slate-500">
                   {lang === "EN" ? "Rajshahi Board" : "রাজশাহী বোর্ড অনুমোদিত"}
                 </span>
@@ -1120,12 +1139,12 @@ export default function App() {
             </div>
 
             {/* DEGREE PASS LEVEL CARD */}
-            <div className="bg-slate-50 rounded-2xl border border-slate-200 overflow-hidden shadow-sm flex flex-col justify-between">
+            <div className="bg-slate-50 dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden shadow-sm flex flex-col justify-between">
               <div className="p-6 md:p-8">
                 <div className="w-12 h-12 bg-indigo-600 text-white rounded-xl flex items-center justify-center font-bold text-lg mb-6 shadow-md shadow-indigo-100">
                   DEG
                 </div>
-                <h3 className="text-xl font-bold text-slate-900 mb-2">
+                <h3 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-2">
                   {t.degreeSection}
                 </h3>
                 <p className="text-xs text-slate-600 mb-6 leading-relaxed">
@@ -1139,9 +1158,9 @@ export default function App() {
                   </h4>
 
                   {degreeGroups.map((group) => (
-                    <div key={group.id} className="bg-white p-3.5 rounded-xl border border-slate-200/80">
+                    <div key={group.id} className="bg-white dark:bg-slate-900 p-3.5 rounded-xl border border-slate-200 dark:border-slate-700/80">
                       <div className="flex justify-between items-center mb-1">
-                        <span className="font-bold text-sm text-slate-900">
+                        <span className="font-bold text-sm text-slate-900 dark:text-slate-100">
                           {lang === "EN" ? group.nameEN : group.nameBN}
                         </span>
                         <span className="text-[11px] bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded font-mono font-bold">
@@ -1161,7 +1180,7 @@ export default function App() {
                 </div>
               </div>
 
-              <div className="p-6 bg-slate-100 border-t border-slate-200 flex items-center justify-between">
+              <div className="p-6 bg-slate-100 dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700 flex items-center justify-between">
                 <span className="text-xs text-slate-500">
                   {lang === "EN" ? "National University" : "জাতীয় বিশ্ববিদ্যালয়"}
                 </span>
@@ -1180,12 +1199,12 @@ export default function App() {
             </div>
 
             {/* HONOURS COURSES LEVEL CARD */}
-            <div className="bg-slate-50 rounded-2xl border border-slate-200 overflow-hidden shadow-sm flex flex-col justify-between">
+            <div className="bg-slate-50 dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden shadow-sm flex flex-col justify-between">
               <div className="p-6 md:p-8">
                 <div className="w-12 h-12 bg-emerald-600 text-white rounded-xl flex items-center justify-center font-bold text-lg mb-6 shadow-md shadow-emerald-100">
                   HON
                 </div>
-                <h3 className="text-xl font-bold text-slate-900 mb-2">
+                <h3 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-2">
                   {t.honoursSection}
                 </h3>
                 <p className="text-xs text-slate-600 mb-6 leading-relaxed">
@@ -1199,9 +1218,9 @@ export default function App() {
                   </h4>
 
                   {honoursCourses.map((course) => (
-                    <div key={course.id} className="bg-white p-3.5 rounded-xl border border-slate-200/80">
+                    <div key={course.id} className="bg-white dark:bg-slate-900 p-3.5 rounded-xl border border-slate-200 dark:border-slate-700/80">
                       <div className="flex justify-between items-center mb-1">
-                        <span className="font-bold text-sm text-slate-900">
+                        <span className="font-bold text-sm text-slate-900 dark:text-slate-100">
                           {lang === "EN" ? course.nameEN : course.nameBN}
                         </span>
                         <span className="text-[10px] bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded font-bold">
@@ -1221,7 +1240,7 @@ export default function App() {
                 </div>
               </div>
 
-              <div className="p-6 bg-slate-100 border-t border-slate-200 flex items-center justify-between">
+              <div className="p-6 bg-slate-100 dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700 flex items-center justify-between">
                 <span className="text-xs text-slate-500">
                   {lang === "EN" ? "Honours Program" : "অনার্স প্রোগ্রাম"}
                 </span>
@@ -1236,27 +1255,27 @@ export default function App() {
       </section>
 
       {/* --- INTERACTIVE ADMISSION PORTAL & ELIGIBILITY CALCULATOR & ADMISSION SLIP GENERATOR --- */}
-      <section id="admission-section" className="py-16 bg-gradient-to-b from-slate-50 to-rose-50/40 border-t border-slate-200">
+      <section id="admission-section" className="py-16 bg-gradient-to-b from-slate-50 to-rose-50/40 border-t border-slate-200 dark:border-slate-700">
         <div className="max-w-7xl mx-auto px-4">
-          
+
           <div className="text-center max-w-3xl mx-auto mb-12">
             <span className="bg-rose-100 text-rose-800 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-widest">
               {lang === "EN" ? "ADMISSION PORTAL 2026" : "অনলাইন ভর্তি পোর্টাল ২০২৬"}
             </span>
-            <h2 className="text-3xl md:text-4xl font-extrabold text-slate-900 mt-2">
+            <h2 className="text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-slate-100 mt-2">
               {lang === "EN" ? "Dynamic Admission & Eligibility Hub" : "সহজ অনলাইন ভর্তি ও যোগ্যতা নিরূপণ কেন্দ্র"}
             </h2>
             <p className="text-slate-600 text-sm mt-3">
-              {lang === "EN" 
+              {lang === "EN"
                 ? "First, check your eligibility instantly with our GPA calculator, then apply simulated online to receive your official registration slip."
                 : "প্রথমে জিপিএ ক্যালকুলেটর দিয়ে আপনার ভর্তির যোগ্যতা পরীক্ষা করুন, এবং অনলাইনে আবেদন করে সাময়িক আবেদন কপি সংগ্রহ করুন।"}
             </p>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-            
+
             {/* COLUMN 1 (4 Cores): ELIGIBILITY CALCULATOR WIDGET */}
-            <div className="lg:col-span-5 bg-white p-6 md:p-8 rounded-2xl shadow-md border border-rose-100">
+            <div className="lg:col-span-5 bg-white dark:bg-slate-900 p-6 md:p-8 rounded-2xl shadow-md border border-rose-100">
               <h3 className="text-lg font-bold text-slate-950 flex items-center gap-2 border-b border-slate-100 pb-3 mb-4">
                 <BookMarked className="w-5 h-5 text-rose-600" />
                 <span>{t.checkEligibility}</span>
@@ -1271,22 +1290,20 @@ export default function App() {
                     <button
                       type="button"
                       onClick={() => setEligibilityLevel("hsc")}
-                      className={`py-2 text-xs font-bold rounded-lg transition-all ${
-                        eligibilityLevel === "hsc"
+                      className={`py-2 text-xs font-bold rounded-lg transition-all ${eligibilityLevel === "hsc"
                           ? "bg-rose-600 text-white"
-                          : "bg-slate-100 text-slate-700 hover:bg-slate-200"
-                      }`}
+                          : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200"
+                        }`}
                     >
                       {lang === "EN" ? "HSC Level" : "উচ্চ মাধ্যমিক স্তর"}
                     </button>
                     <button
                       type="button"
                       onClick={() => setEligibilityLevel("degree")}
-                      className={`py-2 text-xs font-bold rounded-lg transition-all ${
-                        eligibilityLevel === "degree"
+                      className={`py-2 text-xs font-bold rounded-lg transition-all ${eligibilityLevel === "degree"
                           ? "bg-rose-600 text-white"
-                          : "bg-slate-100 text-slate-700 hover:bg-slate-200"
-                      }`}
+                          : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200"
+                        }`}
                     >
                       {lang === "EN" ? "Degree Pass" : "ডিগ্রী পাস কোর্স"}
                     </button>
@@ -1301,7 +1318,7 @@ export default function App() {
                     <select
                       value={targetGroup}
                       onChange={(e) => setTargetGroup(e.target.value)}
-                      className="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs text-slate-800 focus:outline-none focus:border-rose-500"
+                      className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-2.5 text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-rose-500"
                     >
                       <option value="science">{lang === "EN" ? "Science Group (Min: 3.5)" : "বিজ্ঞান বিভাগ (ন্যূনতম: ৩.৫)"}</option>
                       <option value="humanities">{lang === "EN" ? "Humanities Group (Min: 2.5)" : "মানবিক বিভাগ (ন্যূনতম: ২.৫)"}</option>
@@ -1322,7 +1339,7 @@ export default function App() {
                       max="5.00"
                       value={sscGpaInput}
                       onChange={(e) => setSscGpaInput(e.target.value)}
-                      className="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs font-mono font-bold text-slate-800 focus:outline-none focus:border-rose-500"
+                      className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-2.5 text-xs font-mono font-bold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-rose-500"
                     />
                   </div>
 
@@ -1338,7 +1355,7 @@ export default function App() {
                         max="5.00"
                         value={hscGpaInput}
                         onChange={(e) => setHscGpaInput(e.target.value)}
-                        className="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs font-mono font-bold text-slate-800 focus:outline-none focus:border-rose-500"
+                        className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-2.5 text-xs font-mono font-bold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-rose-500"
                       />
                     </div>
                   )}
@@ -1355,11 +1372,10 @@ export default function App() {
 
               {/* Eligibility Result Display */}
               {eligibilityResult && (
-                <div className={`mt-5 p-4 rounded-xl border ${
-                  eligibilityResult.eligible 
-                    ? "bg-emerald-50/90 border-emerald-200 text-emerald-950" 
+                <div className={`mt-5 p-4 rounded-xl border ${eligibilityResult.eligible
+                    ? "bg-emerald-50/90 border-emerald-200 text-emerald-950"
                     : "bg-amber-50/90 border-amber-200 text-amber-950"
-                } transition-all`}>
+                  } transition-all`}>
                   <div className="flex items-start gap-3">
                     {eligibilityResult.eligible ? (
                       <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
@@ -1374,7 +1390,7 @@ export default function App() {
                         {lang === "EN" ? eligibilityResult.msgEN : eligibilityResult.msgBN}
                       </p>
                       {eligibilityResult.detailsEN && (
-                        <p className="text-[11px] mt-2 text-slate-500 border-t border-slate-200/50 pt-2 font-light">
+                        <p className="text-[11px] mt-2 text-slate-500 border-t border-slate-200 dark:border-slate-700/50 pt-2 font-light">
                           {lang === "EN" ? eligibilityResult.detailsEN : eligibilityResult.detailsBN}
                         </p>
                       )}
@@ -1384,8 +1400,8 @@ export default function App() {
               )}
 
               {/* Extra Document checklist info */}
-              <div className="mt-6 bg-slate-50 p-4 rounded-xl border border-slate-100">
-                <h4 className="font-bold text-xs text-slate-700 uppercase mb-2">
+              <div className="mt-6 bg-slate-50 dark:bg-slate-800 p-4 rounded-xl border border-slate-100">
+                <h4 className="font-bold text-xs text-slate-700 dark:text-slate-300 uppercase mb-2">
                   {lang === "EN" ? "Required Papers during Admission:" : "ভর্তির সময় প্রয়োজনীয় কাগজপত্র:"}
                 </h4>
                 <ul className="text-[11px] text-slate-500 space-y-1.5 list-disc pl-4">
@@ -1399,8 +1415,8 @@ export default function App() {
             </div>
 
             {/* COLUMN 2 (7 Cores): ONLINE APPLICATION WIDGET SIMULATOR */}
-            <div className="lg:col-span-7 bg-white p-6 md:p-8 rounded-2xl shadow-md border border-rose-100 relative overflow-hidden">
-              
+            <div className="lg:col-span-7 bg-white dark:bg-slate-900 p-6 md:p-8 rounded-2xl shadow-md border border-rose-100 relative overflow-hidden">
+
               {!isSubmitted ? (
                 <div>
                   <div className="flex justify-between items-center border-b border-slate-100 pb-3 mb-5">
@@ -1416,7 +1432,7 @@ export default function App() {
                   </div>
 
                   <form onSubmit={handleAdmissionSubmit} className="space-y-4">
-                    
+
                     {/* Select Student Avatar Avatar for application receipt */}
                     <div>
                       <label className="block text-xs font-bold text-slate-600 uppercase mb-1">
@@ -1433,11 +1449,10 @@ export default function App() {
                             key={item.emoji}
                             type="button"
                             onClick={() => setChosenAvatar(item.emoji)}
-                            className={`flex-1 p-2 rounded-xl border text-center transition-all cursor-pointer ${
-                              chosenAvatar === item.emoji 
-                                ? "bg-rose-50 border-rose-600 text-xl" 
-                                : "bg-slate-50 border-slate-200 hover:bg-slate-100 text-lg"
-                            }`}
+                            className={`flex-1 p-2 rounded-xl border text-center transition-all cursor-pointer ${chosenAvatar === item.emoji
+                                ? "bg-rose-50 border-rose-600 text-xl"
+                                : "bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:bg-slate-800 text-lg"
+                              }`}
                           >
                             <span className="block">{item.emoji}</span>
                             <span className="text-[9px] text-slate-500 block mt-1">{item.label}</span>
@@ -1457,7 +1472,7 @@ export default function App() {
                           placeholder="e.g. Tasnim Rahman Shafina"
                           value={applicantName}
                           onChange={(e) => setApplicantName(e.target.value)}
-                          className="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs text-slate-800 focus:outline-none focus:border-rose-500"
+                          className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-2.5 text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-rose-500"
                         />
                       </div>
 
@@ -1471,7 +1486,7 @@ export default function App() {
                           placeholder="e.g. 01712XXXXXX"
                           value={applicantPhone}
                           onChange={(e) => setApplicantPhone(e.target.value)}
-                          className="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs text-slate-800 focus:outline-none focus:border-rose-500"
+                          className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-2.5 text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-rose-500"
                         />
                       </div>
                     </div>
@@ -1486,7 +1501,7 @@ export default function App() {
                           placeholder="e.g. Md. Abdur Rahman"
                           value={fatherName}
                           onChange={(e) => setFatherName(e.target.value)}
-                          className="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs text-slate-800 focus:outline-none focus:border-rose-500"
+                          className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-2.5 text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-rose-500"
                         />
                       </div>
 
@@ -1499,7 +1514,7 @@ export default function App() {
                           placeholder="e.g. Begum Rokeya"
                           value={motherName}
                           onChange={(e) => setMotherName(e.target.value)}
-                          className="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs text-slate-800 focus:outline-none focus:border-rose-500"
+                          className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-2.5 text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-rose-500"
                         />
                       </div>
                     </div>
@@ -1515,7 +1530,7 @@ export default function App() {
                           placeholder="124578"
                           value={sscRoll}
                           onChange={(e) => setSscRoll(e.target.value)}
-                          className="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs text-slate-800 focus:outline-none focus:border-rose-500 font-mono"
+                          className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-2.5 text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-rose-500 font-mono"
                         />
                       </div>
 
@@ -1526,7 +1541,7 @@ export default function App() {
                         <select
                           value={sscBoard}
                           onChange={(e) => setSscBoard(e.target.value)}
-                          className="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs text-slate-800 focus:outline-none focus:border-rose-500"
+                          className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-2.5 text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-rose-500"
                         >
                           <option value="Rajshahi">Rajshahi</option>
                           <option value="Dhaka">Dhaka</option>
@@ -1542,7 +1557,7 @@ export default function App() {
                         <select
                           value={sscYear}
                           onChange={(e) => setSscYear(e.target.value)}
-                          className="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs text-slate-800 focus:outline-none focus:border-rose-500"
+                          className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-2.5 text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-rose-500"
                         >
                           <option value="2025">2025</option>
                           <option value="2024">2024</option>
@@ -1560,7 +1575,7 @@ export default function App() {
                           placeholder="e.g. 4.80"
                           value={applicantGpa}
                           onChange={(e) => setApplicantGpa(e.target.value)}
-                          className="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs text-slate-800 focus:outline-none focus:border-rose-500 font-mono font-bold"
+                          className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-2.5 text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-rose-500 font-mono font-bold"
                         />
                       </div>
                     </div>
@@ -1572,7 +1587,7 @@ export default function App() {
                       <select
                         value={selectedProgram}
                         onChange={(e) => setSelectedProgram(e.target.value)}
-                        className="w-full bg-slate-50 border-rose-200 border-2 rounded-lg p-2.5 text-xs text-slate-800 focus:outline-none focus:border-rose-500 font-semibold"
+                        className="w-full bg-slate-50 dark:bg-slate-800 border-rose-200 border-2 rounded-lg p-2.5 text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-rose-500 font-semibold"
                       >
                         <option value="HSC Science">{lang === "EN" ? "HSC - Science Group" : "এইচএসসি - বিজ্ঞান গ্রুপ"}</option>
                         <option value="HSC Humanities">{lang === "EN" ? "HSC - Humanities Group" : "এইচএসসি - মানবিক গ্রুপ"}</option>
@@ -1590,7 +1605,7 @@ export default function App() {
                     <div className="p-3 bg-rose-50/50 rounded-lg text-[11px] text-rose-950 flex items-start gap-2 border border-rose-100">
                       <ShieldCheck className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
                       <p>
-                        {lang === "EN" 
+                        {lang === "EN"
                           ? "By clicking Submit, your simulated application will be registered in our mock database. You will immediately receive a printable official temporary admission slip with custom QR Code and Application ID."
                           : "আবেদন সাবমিট করলে আমাদের ডেমো ডাটাবেজে আপনার তথ্য সংরক্ষিত হবে এবং আপনি একটি কিউআর কোডসহ ডাউনলোডযোগ্য সাময়িক ভর্তি আবেদন রশিদ পাবেন।"}
                       </p>
@@ -1606,8 +1621,8 @@ export default function App() {
                 </div>
               ) : (
                 /* OFFICIAL APPLICATION SLIP VIEW */
-                <div className="bg-white p-2 border-2 border-slate-900 rounded-xl">
-                  
+                <div className="bg-white dark:bg-slate-900 p-2 border-2 border-slate-900 rounded-xl">
+
                   {/* SLIP HEADER */}
                   <div className="bg-slate-950 text-white p-4 rounded-lg flex justify-between items-center text-left">
                     <div>
@@ -1634,18 +1649,18 @@ export default function App() {
                   {/* SLIP INNER DETAILS */}
                   <div className="p-4 md:p-6 space-y-4">
                     <div className="flex items-center gap-4 border-b border-slate-100 pb-4">
-                      <div className="w-16 h-16 bg-slate-100 border-2 border-slate-200 rounded-xl flex items-center justify-center text-4xl shadow-inner">
+                      <div className="w-16 h-16 bg-slate-100 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl flex items-center justify-center text-4xl shadow-inner">
                         {submittedData?.chosenAvatar}
                       </div>
                       <div className="flex-1">
                         <span className="text-[9px] bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded font-bold uppercase">
                           {submittedData?.selectedProgram}
                         </span>
-                        <h4 className="text-base font-extrabold text-slate-900 mt-1">
+                        <h4 className="text-base font-extrabold text-slate-900 dark:text-slate-100 mt-1">
                           {submittedData?.applicantName}
                         </h4>
                         <p className="text-xs text-slate-600">
-                          {lang === "EN" ? "Mobile Contact:" : "মোবাইল নাম্বার:"} <strong className="font-mono text-slate-800">{submittedData?.applicantPhone}</strong>
+                          {lang === "EN" ? "Mobile Contact:" : "মোবাইল নাম্বার:"} <strong className="font-mono text-slate-800 dark:text-slate-200">{submittedData?.applicantPhone}</strong>
                         </p>
                       </div>
                     </div>
@@ -1653,15 +1668,15 @@ export default function App() {
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
                       <div>
                         <p className="text-slate-400 text-[10px] uppercase font-bold">{lang === "EN" ? "Father's Name" : "পিতার নাম"}</p>
-                        <p className="font-semibold text-slate-800">{submittedData?.fatherName || "N/A"}</p>
+                        <p className="font-semibold text-slate-800 dark:text-slate-200">{submittedData?.fatherName || "N/A"}</p>
                       </div>
                       <div>
                         <p className="text-slate-400 text-[10px] uppercase font-bold">{lang === "EN" ? "Mother's Name" : "মাতার নাম"}</p>
-                        <p className="font-semibold text-slate-800">{submittedData?.motherName || "N/A"}</p>
+                        <p className="font-semibold text-slate-800 dark:text-slate-200">{submittedData?.motherName || "N/A"}</p>
                       </div>
                       <div>
                         <p className="text-slate-400 text-[10px] uppercase font-bold">{lang === "EN" ? "SSC Roll & Board" : "এসএসসি রোল ও বোর্ড"}</p>
-                        <p className="font-semibold text-slate-800 font-mono">{submittedData?.sscRoll} ({submittedData?.sscBoard} Board)</p>
+                        <p className="font-semibold text-slate-800 dark:text-slate-200 font-mono">{submittedData?.sscRoll} ({submittedData?.sscBoard} Board)</p>
                       </div>
                       <div>
                         <p className="text-slate-400 text-[10px] uppercase font-bold">{lang === "EN" ? "SSC GPA & Year" : "এসএসসি জিপিএ ও পাশের সন"}</p>
@@ -1670,15 +1685,15 @@ export default function App() {
                     </div>
 
                     {/* BARCODE LOOK-ALIKE & QR SIMULATOR */}
-                    <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200 flex flex-col sm:flex-row justify-between items-center gap-4">
+                    <div className="bg-slate-50 dark:bg-slate-800 p-3.5 rounded-xl border border-slate-200 dark:border-slate-700 flex flex-col sm:flex-row justify-between items-center gap-4">
                       <div>
                         <p className="text-[9px] text-slate-400 uppercase font-bold">{lang === "EN" ? "Official QR Code Verification" : "অফিসিয়াল কিউআর ভেরিফিকেশন"}</p>
                         <p className="text-[10px] text-slate-600 mt-1 leading-relaxed">
-                          {lang === "EN" 
+                          {lang === "EN"
                             ? "Please present a printed copy of this slip in College Admin desk room 102. Bring original transcripts and 3 copies of passport photos."
                             : "দয়া করে এই রশিদটি প্রিন্ট করে মূল মার্কশিটসহ কলেজের ১০২ নম্বর কক্ষে জমা দিয়ে ভর্তি চূড়ান্ত করুন।"}
                         </p>
-                        
+
                         {/* Fake barcode bars */}
                         <div className="flex items-center gap-0.5 mt-3 h-8 opacity-75">
                           <span className="w-1.5 h-full bg-slate-900 inline-block"></span>
@@ -1698,7 +1713,7 @@ export default function App() {
 
                       {/* Fake QR box */}
                       <div className="w-24 h-24 bg-slate-900 p-1.5 rounded-lg flex flex-col items-center justify-center shrink-0">
-                        <div className="grid grid-cols-4 gap-1 w-full h-full bg-white p-1">
+                        <div className="grid grid-cols-4 gap-1 w-full h-full bg-white dark:bg-slate-900 p-1">
                           <div className="bg-slate-900 rounded-xs"></div>
                           <div className="bg-slate-900 rounded-xs"></div>
                           <div className="bg-slate-400 rounded-xs"></div>
@@ -1722,7 +1737,7 @@ export default function App() {
                   </div>
 
                   {/* FOOTER ACTIONS OF THE SLIP */}
-                  <div className="bg-slate-50 p-4 border-t border-slate-100 rounded-b-xl flex flex-wrap justify-between items-center gap-3">
+                  <div className="bg-slate-50 dark:bg-slate-800 p-4 border-t border-slate-100 rounded-b-xl flex flex-wrap justify-between items-center gap-3">
                     <span className="text-[10px] text-slate-400 font-mono">
                       {lang === "EN" ? "Generated on:" : "তৈরির তারিখ:"} {submittedData?.dateSubmitted}
                     </span>
@@ -1753,16 +1768,16 @@ export default function App() {
       </section>
 
       {/* --- EXAM RESULTS SECTION --- */}
-      <section id="results-section" className="py-16 bg-slate-50 border-t border-slate-200">
+      <section id="results-section" className="py-16 bg-slate-50 dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700">
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex flex-col lg:flex-row gap-8 items-center">
-            
+
             {/* Left side text */}
             <div className="w-full lg:w-1/3">
               <span className="text-xs font-bold uppercase tracking-wider text-rose-600 block mb-2">
                 {lang === "EN" ? "ACADEMIC RESULTS PORTAL" : "একাডেমিক ফলাফল পোর্টাল"}
               </span>
-              <h2 className="text-2xl md:text-4xl font-extrabold text-slate-900 mb-4">
+              <h2 className="text-2xl md:text-4xl font-extrabold text-slate-900 dark:text-slate-100 mb-4">
                 {t.resultSectionTitle}
               </h2>
               <p className="text-slate-600 text-sm leading-relaxed mb-6">
@@ -1778,18 +1793,18 @@ export default function App() {
 
             {/* Right side form and result */}
             <div className="w-full lg:w-2/3">
-              <div className="bg-white rounded-2xl shadow-md border border-slate-200 p-6 md:p-8">
+              <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-md border border-slate-200 dark:border-slate-700 p-6 md:p-8">
                 <form onSubmit={handleResultSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
-                  
+
                   {/* Exam Dropdown */}
                   <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-2 uppercase tracking-wide">
+                    <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-2 uppercase tracking-wide">
                       {t.resultExamLabel}
                     </label>
                     <select
                       value={resultExam}
                       onChange={(e) => setResultExam(e.target.value)}
-                      className="w-full border-2 border-slate-200 rounded-lg px-4 py-3 bg-slate-50 text-slate-900 focus:outline-none focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600 transition-colors"
+                      className="w-full border-2 border-slate-200 dark:border-slate-700 rounded-lg px-4 py-3 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600 transition-colors"
                     >
                       <option value="HSC_1st">Intermediate 1st Year (HSC)</option>
                       <option value="HSC_2nd">Intermediate 2nd Year (HSC)</option>
@@ -1801,13 +1816,13 @@ export default function App() {
 
                   {/* Passing Year */}
                   <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-2 uppercase tracking-wide">
+                    <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-2 uppercase tracking-wide">
                       {t.resultYearLabel}
                     </label>
                     <select
                       value={resultYear}
                       onChange={(e) => setResultYear(e.target.value)}
-                      className="w-full border-2 border-slate-200 rounded-lg px-4 py-3 bg-slate-50 text-slate-900 focus:outline-none focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600 transition-colors"
+                      className="w-full border-2 border-slate-200 dark:border-slate-700 rounded-lg px-4 py-3 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600 transition-colors"
                     >
                       {[2023, 2022, 2021, 2020].map(yr => (
                         <option key={yr} value={yr}>{yr}</option>
@@ -1817,7 +1832,7 @@ export default function App() {
 
                   {/* Registration No */}
                   <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-2 uppercase tracking-wide">
+                    <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-2 uppercase tracking-wide">
                       {t.resultRegLabel}
                     </label>
                     <input
@@ -1826,13 +1841,13 @@ export default function App() {
                       value={resultReg}
                       onChange={(e) => setResultReg(e.target.value)}
                       placeholder="e.g. 1928475"
-                      className="w-full border-2 border-slate-200 rounded-lg px-4 py-3 text-slate-900 focus:outline-none focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600 transition-colors placeholder:text-slate-400"
+                      className="w-full border-2 border-slate-200 dark:border-slate-700 rounded-lg px-4 py-3 text-slate-900 dark:text-slate-100 focus:outline-none focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600 transition-colors placeholder:text-slate-400"
                     />
                   </div>
 
                   {/* Roll No */}
                   <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-2 uppercase tracking-wide">
+                    <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-2 uppercase tracking-wide">
                       {t.resultRollLabel}
                     </label>
                     <input
@@ -1841,7 +1856,7 @@ export default function App() {
                       value={resultRoll}
                       onChange={(e) => setResultRoll(e.target.value)}
                       placeholder="e.g. 83749"
-                      className="w-full border-2 border-slate-200 rounded-lg px-4 py-3 text-slate-900 focus:outline-none focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600 transition-colors placeholder:text-slate-400"
+                      className="w-full border-2 border-slate-200 dark:border-slate-700 rounded-lg px-4 py-3 text-slate-900 dark:text-slate-100 focus:outline-none focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600 transition-colors placeholder:text-slate-400"
                     />
                   </div>
 
@@ -1873,7 +1888,7 @@ export default function App() {
                         <p className="text-xs text-emerald-700">CGPA: {resultData.cgpa} • {resultData.status}</p>
                       </div>
                     </div>
-                    <p className="text-sm text-emerald-800 bg-white p-3 rounded-lg border border-emerald-100 shadow-sm italic">
+                    <p className="text-sm text-emerald-800 bg-white dark:bg-slate-900 p-3 rounded-lg border border-emerald-100 shadow-sm italic">
                       {resultData.message}
                     </p>
                   </div>
@@ -1891,10 +1906,10 @@ export default function App() {
       </section>
 
       {/* --- NOTICE BOARD SECTION --- */}
-      <section id="notices-section" className="py-16 bg-white border-t border-slate-200">
+      <section id="notices-section" className="py-16 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-700">
         <div className="max-w-7xl mx-auto px-4">
-          
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 border-b border-slate-200 pb-5 mb-8">
+
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 border-b border-slate-200 dark:border-slate-700 pb-5 mb-8">
             <div>
               <span className="text-xs font-bold uppercase tracking-wider text-rose-600 block">
                 {lang === "EN" ? "HJSWC NOTICE BOARD" : "হাজী জমির উদ্দীন শাফিনা কলেজ নোটিশ বোর্ড"}
@@ -1903,12 +1918,12 @@ export default function App() {
                 {t.navNotices}
               </h2>
             </div>
-            
+
           </div>
 
           {/* SEARCH & CATEGORY FILTERS GRID */}
-          <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 mb-6 flex flex-col md:flex-row items-center justify-between gap-4">
-            
+          <div className="bg-slate-50 dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 mb-6 flex flex-col md:flex-row items-center justify-between gap-4">
+
             {/* Category Filter list */}
             <div className="flex flex-wrap gap-1.5 justify-center md:justify-start w-full md:w-auto">
               {[
@@ -1921,11 +1936,10 @@ export default function App() {
                 <button
                   key={cat.id}
                   onClick={() => setSelectedNoticeCategory(cat.id)}
-                  className={`px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
-                    selectedNoticeCategory === cat.id
+                  className={`px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-all cursor-pointer ${selectedNoticeCategory === cat.id
                       ? "bg-rose-600 text-white shadow-sm"
-                      : "bg-white text-slate-700 border border-slate-200 hover:bg-slate-100"
-                  }`}
+                      : "bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:bg-slate-800"
+                    }`}
                 >
                   {cat.label}
                 </button>
@@ -1939,7 +1953,7 @@ export default function App() {
                 placeholder={lang === "EN" ? "Search notice title..." : "নোটিশের শব্দ দিয়ে খুঁজুন..."}
                 value={searchNotice}
                 onChange={(e) => setSearchNotice(e.target.value)}
-                className="w-full bg-white border border-slate-300 rounded-lg pl-9 pr-4 py-2 text-xs text-slate-800 focus:outline-none focus:border-rose-500"
+                className="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg pl-9 pr-4 py-2 text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-rose-500"
               />
               <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
             </div>
@@ -1948,22 +1962,22 @@ export default function App() {
 
           {/* NOTICE GRID AND DETAIL DISPLAY */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-            
+
             {/* LIST OF NOTICES (8 cols) */}
             <div className="lg:col-span-8 space-y-4">
               {filteredNotices.length > 0 ? (
                 filteredNotices.map((notice) => (
-                  <div 
-                    key={notice.id} 
-                    className="bg-white p-5 rounded-xl border border-slate-200 hover:border-rose-300 shadow-xs hover:shadow-md transition-all flex items-start gap-4"
+                  <div
+                    key={notice.id}
+                    className="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-rose-300 shadow-xs hover:shadow-md transition-all flex items-start gap-4"
                   >
-                    
+
                     {/* Date badge */}
-                    <div className="bg-slate-100 text-slate-700 p-2.5 rounded-lg text-center shrink-0 min-w-[70px] border border-slate-200">
+                    <div className="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 p-2.5 rounded-lg text-center shrink-0 min-w-[70px] border border-slate-200 dark:border-slate-700">
                       <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest">
                         {new Date(notice.date).toLocaleString('default', { month: 'short' })}
                       </span>
-                      <span className="block text-lg font-black font-mono text-slate-800 leading-tight">
+                      <span className="block text-lg font-black font-mono text-slate-800 dark:text-slate-200 leading-tight">
                         {new Date(notice.date).getDate()}
                       </span>
                       <span className="block text-[9px] font-mono text-slate-500">
@@ -1974,15 +1988,14 @@ export default function App() {
                     {/* Core Notice Content */}
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1.5 flex-wrap">
-                        <span className={`text-[9px] font-extrabold uppercase px-2 py-0.5 rounded ${
-                          notice.category === "exam" 
-                            ? "bg-amber-100 text-amber-800" 
-                            : notice.category === "admission" 
-                            ? "bg-rose-100 text-rose-800" 
-                            : notice.category === "holiday" 
-                            ? "bg-violet-100 text-violet-800" 
-                            : "bg-blue-100 text-blue-800"
-                        }`}>
+                        <span className={`text-[9px] font-extrabold uppercase px-2 py-0.5 rounded ${notice.category === "exam"
+                            ? "bg-amber-100 text-amber-800"
+                            : notice.category === "admission"
+                              ? "bg-rose-100 text-rose-800"
+                              : notice.category === "holiday"
+                                ? "bg-violet-100 text-violet-800"
+                                : "bg-blue-100 text-blue-800"
+                          }`}>
                           {notice.category}
                         </span>
 
@@ -1993,7 +2006,7 @@ export default function App() {
                         )}
                       </div>
 
-                      <h3 className="font-extrabold text-sm sm:text-base text-slate-900 leading-snug hover:text-rose-600 transition-colors">
+                      <h3 className="font-extrabold text-sm sm:text-base text-slate-900 dark:text-slate-100 leading-snug hover:text-rose-600 transition-colors">
                         {lang === "EN" ? notice.titleEN : notice.titleBN}
                       </h3>
 
@@ -2016,9 +2029,9 @@ export default function App() {
                   </div>
                 ))
               ) : (
-                <div className="bg-slate-50 border border-dashed border-slate-300 p-12 rounded-xl text-center">
+                <div className="bg-slate-50 dark:bg-slate-800 border border-dashed border-slate-300 dark:border-slate-600 p-12 rounded-xl text-center">
                   <AlertCircle className="w-12 h-12 text-slate-400 mx-auto mb-3" />
-                  <h4 className="font-bold text-slate-700">No notices matched your search filter.</h4>
+                  <h4 className="font-bold text-slate-700 dark:text-slate-300">No notices matched your search filter.</h4>
                   <p className="text-xs text-slate-500 mt-1">Try changing categories or check back later.</p>
                 </div>
               )}
@@ -2026,7 +2039,7 @@ export default function App() {
 
             {/* SIDEBAR WIDGET: DOWNLOADS & ACADEMIC CALENDAR PREVIEW (4 cols) */}
             <div className="lg:col-span-4 space-y-6">
-              
+
               {/* Quick Academic Files Download desk */}
               <div className="bg-slate-950 text-white p-6 rounded-2xl shadow-md">
                 <h3 className="font-extrabold text-sm uppercase tracking-wider text-rose-400 flex items-center gap-2 mb-4">
@@ -2042,9 +2055,9 @@ export default function App() {
                     { nameEN: "Honours Syllabus Guide PDF", nameBN: "অনার্স সিলেবাস নির্দেশিকা", size: "2.8 MB" },
                     { nameEN: "Stipend Application Form HJS", nameBN: "উপবৃত্তি আবেদন ফর্ম ২০২৬", size: "520 KB" }
                   ].map((file, idx) => (
-                    <div 
-                      key={idx} 
-                      className="bg-white/5 hover:bg-white/10 p-3 rounded-lg flex items-center justify-between gap-2 border border-white/10 transition-all cursor-pointer"
+                    <div
+                      key={idx}
+                      className="bg-white dark:bg-slate-900/5 hover:bg-white dark:bg-slate-900/10 p-3 rounded-lg flex items-center justify-between gap-2 border border-white/10 transition-all cursor-pointer"
                       onClick={() => {
                         const name = lang === "EN" ? file.nameEN : file.nameBN;
                         const text = `This is a simulated downloaded file for: ${name}\n\nIn a real production environment, this would be the actual PDF file from the server.`;
@@ -2082,7 +2095,7 @@ export default function App() {
                   <span>{lang === "EN" ? "Women Empowerment Pledge" : "নারী উন্নয়ন ও শিক্ষা অঙ্গীকার"}</span>
                 </h3>
                 <p className="text-xs text-rose-900 leading-relaxed font-light">
-                  {lang === "EN" 
+                  {lang === "EN"
                     ? "Haji Jamir Uddin Shafina Women's Degree College serves as a secure sanctuary of learning for women in Rajshahi. We enforce 100% discipline, strictly prohibit eve-teasing, maintain high moral education standards and support financially constrained families."
                     : "রাজশাহীর রাজপাড়ায় নারী শিক্ষাকে বেগবান করতে আমাদের প্রতিষ্ঠানটি এক নির্ভরযোগ্য আশ্রয়স্থল। এখানে ছাত্রীদের শতভাগ নিরাপত্তা নিশ্চিতকরণ, সুশিক্ষা প্রদান ও ট্রাস্ট ফান্ডের মাধ্যমে বিশেষ সুবিধা প্রদান করা হয়।"}
                 </p>
@@ -2096,14 +2109,14 @@ export default function App() {
       </section>
 
       {/* --- CAMPUS LIFE / FACILITIES SECTION --- */}
-      <section className="py-16 bg-slate-50 border-t border-slate-200">
+      <section className="py-16 bg-slate-50 dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700">
         <div className="max-w-7xl mx-auto px-4">
-          
+
           <div className="text-center max-w-3xl mx-auto mb-12">
             <span className="bg-indigo-100 text-indigo-800 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">
               {lang === "EN" ? "Campus Infrastructure" : "ক্যাম্পাস সুযোগ-সুবিধা"}
             </span>
-            <h2 className="text-3xl font-extrabold text-slate-900 mt-2">
+            <h2 className="text-3xl font-extrabold text-slate-900 dark:text-slate-100 mt-2">
               {lang === "EN" ? "Premium Learning Facilities" : "উন্নত শিক্ষা সহায়ক পরিবেশ ও ল্যাব"}
             </h2>
             <div className="w-20 h-1 bg-indigo-600 mx-auto mt-3 rounded-full"></div>
@@ -2111,23 +2124,23 @@ export default function App() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {facilitiesData.map((fac) => (
-              <div 
-                key={fac.id} 
-                className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-xs hover:shadow-lg transition-all-300 flex flex-col justify-between"
+              <div
+                key={fac.id}
+                className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden shadow-xs hover:shadow-lg transition-all-300 flex flex-col justify-between"
               >
                 <div>
                   <div className="h-48 overflow-hidden relative">
-                    <img 
-                      src={fac.image} 
-                      alt={fac.titleEN} 
-                      className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" 
+                    <img
+                      src={fac.image}
+                      alt={fac.titleEN}
+                      className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
                     />
                     <div className="absolute top-3 left-3 bg-slate-950/80 backdrop-blur-xs text-white text-[10px] px-2 py-0.5 rounded uppercase font-mono font-bold tracking-widest">
                       {fac.id}
                     </div>
                   </div>
                   <div className="p-6">
-                    <h3 className="font-extrabold text-base text-slate-900 mb-2">
+                    <h3 className="font-extrabold text-base text-slate-900 dark:text-slate-100 mb-2">
                       {lang === "EN" ? fac.titleEN : fac.titleBN}
                     </h3>
                     <p className="text-xs text-slate-600 leading-relaxed font-light">
@@ -2136,7 +2149,7 @@ export default function App() {
                   </div>
                 </div>
 
-                <div className="px-6 py-4 bg-slate-50 border-t border-slate-100 flex items-center justify-between text-xs text-slate-400">
+                <div className="px-6 py-4 bg-slate-50 dark:bg-slate-800 border-t border-slate-100 flex items-center justify-between text-xs text-slate-400">
                   <span className="flex items-center gap-1">
                     <Check className="w-3.5 h-3.5 text-emerald-600" />
                     <span>Active facility</span>
@@ -2153,28 +2166,28 @@ export default function App() {
       </section>
 
       {/* --- INTERACTIVE VIRTUAL CAMPUS MAP --- */}
-      <section id="campus-map-section" className="py-16 bg-white border-t border-slate-200">
+      <section id="campus-map-section" className="py-16 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-700">
         <div className="max-w-7xl mx-auto px-4">
-          
+
           <div className="text-center max-w-3xl mx-auto mb-12">
             <span className="bg-rose-100 text-rose-800 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-widest">
               {lang === "EN" ? "Virtual Navigation" : "ভার্চুয়াল ক্যাম্পাস ম্যাপ"}
             </span>
-            <h2 className="text-3xl font-extrabold text-slate-900 mt-2">
+            <h2 className="text-3xl font-extrabold text-slate-900 dark:text-slate-100 mt-2">
               {lang === "EN" ? "Interactive Campus Map Spots" : "ক্যাম্পাসের প্রধান স্থাপনা ও অবস্থান নির্দেশিকা"}
             </h2>
             <p className="text-slate-500 text-xs md:text-sm mt-3">
-              {lang === "EN" 
+              {lang === "EN"
                 ? "Click on any building location below to see its detailed infrastructure, floors, departments, and active facilities inside the college boundaries."
                 : "ক্যাম্পাসের যেকোনো ভবনে ক্লিক করে সেটির তলা বিন্যাস, তদারকি কর্মকর্তা এবং সক্রিয় সুবিধাসমূহ বিস্তারিত দেখে নিন।"}
             </p>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
-            
+
             {/* Left Column: Grid representation of the map (7 cols) */}
-            <div className="lg:col-span-7 bg-slate-50 p-6 md:p-8 rounded-3xl border border-slate-200 flex flex-col justify-between relative overflow-hidden">
-              
+            <div className="lg:col-span-7 bg-slate-50 dark:bg-slate-800 p-6 md:p-8 rounded-3xl border border-slate-200 dark:border-slate-700 flex flex-col justify-between relative overflow-hidden">
+
               <div className="absolute top-0 right-0 w-32 h-32 bg-rose-500/5 rounded-full blur-2xl"></div>
 
               <div>
@@ -2197,16 +2210,14 @@ export default function App() {
                         key={spot.id}
                         type="button"
                         onClick={() => setSelectedSpotId(spot.id)}
-                        className={`w-full text-left p-4 rounded-xl border transition-all-300 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 cursor-pointer ${
-                          isSelected 
-                            ? "bg-rose-900 text-white border-rose-900 shadow-lg scale-[1.02]" 
-                            : "bg-white text-slate-800 border-slate-200 hover:border-rose-400 hover:bg-rose-50/20"
-                        }`}
+                        className={`w-full text-left p-4 rounded-xl border transition-all-300 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 cursor-pointer ${isSelected
+                            ? "bg-rose-900 text-white border-rose-900 shadow-lg scale-[1.02]"
+                            : "bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 border-slate-200 dark:border-slate-700 hover:border-rose-400 hover:bg-rose-50/20"
+                          }`}
                       >
                         <div className="flex items-center gap-3">
-                          <div className={`w-10 h-10 rounded-lg flex items-center justify-center font-bold text-sm ${
-                            isSelected ? "bg-white text-rose-900" : "bg-rose-50 text-rose-700"
-                          }`}>
+                          <div className={`w-10 h-10 rounded-lg flex items-center justify-center font-bold text-sm ${isSelected ? "bg-white dark:bg-slate-900 text-rose-900" : "bg-rose-50 text-rose-700"
+                            }`}>
                             {spot.id === "admin" && "🏢"}
                             {spot.id === "shafina-hall" && "📚"}
                             {spot.id === "science-ict" && "💻"}
@@ -2223,11 +2234,10 @@ export default function App() {
                           </div>
                         </div>
 
-                        <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full uppercase ${
-                          isSelected 
-                            ? "bg-rose-600 text-white" 
-                            : "bg-slate-100 text-slate-600"
-                        }`}>
+                        <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full uppercase ${isSelected
+                            ? "bg-rose-600 text-white"
+                            : "bg-slate-100 dark:bg-slate-800 text-slate-600"
+                          }`}>
                           {isSelected ? (lang === "EN" ? "Viewing Now" : "বর্তমানে নির্বাচিত") : (lang === "EN" ? "Click to Explore" : "দেখুন")}
                         </span>
                       </button>
@@ -2249,8 +2259,8 @@ export default function App() {
             </div>
 
             {/* Right Column: Detail Description (5 cols) */}
-            <div className="lg:col-span-5 bg-white p-6 md:p-8 rounded-3xl border border-slate-200 shadow-sm flex flex-col justify-between">
-              
+            <div className="lg:col-span-5 bg-white dark:bg-slate-900 p-6 md:p-8 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col justify-between">
+
               {(() => {
                 const currentSpot = campusSpots.find(s => s.id === selectedSpotId) || campusSpots[0];
                 return (
@@ -2259,7 +2269,7 @@ export default function App() {
                       <span className="text-[10px] font-bold text-rose-600 uppercase tracking-widest block">
                         {lang === "EN" ? "Location Infrastructure Details" : "অবকাঠামোগত বিবরণ"}
                       </span>
-                      <h3 className="text-xl font-extrabold text-slate-900 mt-1">
+                      <h3 className="text-xl font-extrabold text-slate-900 dark:text-slate-100 mt-1">
                         {lang === "EN" ? currentSpot.nameEN : currentSpot.nameBN}
                       </h3>
                       <p className="text-xs font-bold text-indigo-700 mt-1 font-mono">
@@ -2269,40 +2279,40 @@ export default function App() {
 
                     {/* Dummy image representation of building */}
                     <div className="h-48 rounded-xl bg-slate-900 relative overflow-hidden flex items-center justify-center">
-                      
+
                       {currentSpot.id === "admin" && (
-                        <img 
-                          src="https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&q=80&w=500" 
-                          alt="admin" 
-                          className="w-full h-full object-cover opacity-80" 
+                        <img
+                          src="https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&q=80&w=500"
+                          alt="admin"
+                          className="w-full h-full object-cover opacity-80"
                         />
                       )}
                       {currentSpot.id === "shafina-hall" && (
-                        <img 
-                          src="https://images.unsplash.com/photo-1497633762265-9d179a990aa6?auto=format&fit=crop&q=80&w=500" 
-                          alt="shafina hall" 
-                          className="w-full h-full object-cover opacity-80" 
+                        <img
+                          src="https://images.unsplash.com/photo-1497633762265-9d179a990aa6?auto=format&fit=crop&q=80&w=500"
+                          alt="shafina hall"
+                          className="w-full h-full object-cover opacity-80"
                         />
                       )}
                       {currentSpot.id === "science-ict" && (
-                        <img 
-                          src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&q=80&w=500" 
-                          alt="science and technology block" 
-                          className="w-full h-full object-cover opacity-80" 
+                        <img
+                          src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&q=80&w=500"
+                          alt="science and technology block"
+                          className="w-full h-full object-cover opacity-80"
                         />
                       )}
                       {currentSpot.id === "girls-hostel" && (
-                        <img 
-                          src="https://images.unsplash.com/photo-1555854877-bab0e564b8d5?auto=format&fit=crop&q=80&w=500" 
-                          alt="girls hostel" 
-                          className="w-full h-full object-cover opacity-80" 
+                        <img
+                          src="https://images.unsplash.com/photo-1555854877-bab0e564b8d5?auto=format&fit=crop&q=80&w=500"
+                          alt="girls hostel"
+                          className="w-full h-full object-cover opacity-80"
                         />
                       )}
                       {currentSpot.id === "common-room" && (
-                        <img 
-                          src="https://images.unsplash.com/photo-1511556532299-8f662fc26c06?auto=format&fit=crop&q=80&w=500" 
-                          alt="recreation" 
-                          className="w-full h-full object-cover opacity-80" 
+                        <img
+                          src="https://images.unsplash.com/photo-1511556532299-8f662fc26c06?auto=format&fit=crop&q=80&w=500"
+                          alt="recreation"
+                          className="w-full h-full object-cover opacity-80"
                         />
                       )}
 
@@ -2319,7 +2329,7 @@ export default function App() {
                       <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider">
                         {lang === "EN" ? "Functional Purpose & Roles:" : "কার্যক্রম ও বৈশিষ্ট্য:"}
                       </h4>
-                      <p className="text-xs text-slate-600 leading-relaxed font-light bg-slate-50 p-4 rounded-xl border border-slate-100">
+                      <p className="text-xs text-slate-600 leading-relaxed font-light bg-slate-50 dark:bg-slate-800 p-4 rounded-xl border border-slate-100">
                         {lang === "EN" ? currentSpot.detailsEN : currentSpot.detailsBN}
                       </p>
                     </div>
@@ -2341,14 +2351,14 @@ export default function App() {
       </section>
 
       {/* --- PHOTO GALLERY SECTION --- */}
-      <section id="gallery-section" className="py-16 bg-slate-50 border-t border-slate-200">
+      <section id="gallery-section" className="py-16 bg-slate-50 dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700">
         <div className="max-w-7xl mx-auto px-4">
-          
+
           <div className="text-center max-w-3xl mx-auto mb-10">
             <span className="text-xs font-bold uppercase tracking-wider bg-rose-100 text-rose-800 px-3 py-1 rounded-full">
               {lang === "EN" ? "Campus Life Visualized" : "ক্যাম্পাস চিত্র গ্যালারি"}
             </span>
-            <h2 className="text-3xl font-extrabold text-slate-900 mt-2">
+            <h2 className="text-3xl font-extrabold text-slate-900 dark:text-slate-100 mt-2">
               {lang === "EN" ? "Moments & Memories of HJSWC" : "আমাদের শিক্ষা জীবনের রঙিন মুহূর্তসমূহ"}
             </h2>
             <div className="w-16 h-1 bg-rose-600 mx-auto mt-3 rounded-full"></div>
@@ -2367,11 +2377,10 @@ export default function App() {
               <button
                 key={btn.id}
                 onClick={() => setGalleryFilter(btn.id)}
-                className={`px-4 py-1.5 text-xs font-semibold rounded-full transition-all cursor-pointer ${
-                  galleryFilter === btn.id
+                className={`px-4 py-1.5 text-xs font-semibold rounded-full transition-all cursor-pointer ${galleryFilter === btn.id
                     ? "bg-slate-900 text-white"
-                    : "bg-white text-slate-700 border border-slate-200 hover:bg-slate-100"
-                }`}
+                    : "bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:bg-slate-800"
+                  }`}
               >
                 {btn.label}
               </button>
@@ -2381,16 +2390,16 @@ export default function App() {
           {/* Gallery Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredGallery.map((img) => (
-              <div 
+              <div
                 key={img.id}
-                className="bg-white p-3 rounded-2xl border border-slate-200 shadow-xs hover:shadow-md transition-all-300 group cursor-pointer"
+                className="bg-white dark:bg-slate-900 p-3 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-xs hover:shadow-md transition-all-300 group cursor-pointer"
                 onClick={() => setLightboxImg({ url: img.url, title: lang === "EN" ? img.titleEN : img.titleBN })}
               >
                 <div className="h-48 sm:h-56 rounded-xl overflow-hidden relative bg-slate-900">
-                  <img 
-                    src={img.url} 
-                    alt={img.titleEN} 
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90 group-hover:opacity-100" 
+                  <img
+                    src={img.url}
+                    alt={img.titleEN}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90 group-hover:opacity-100"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-3">
                     <span className="text-white text-xs font-semibold flex items-center gap-1">
@@ -2403,7 +2412,7 @@ export default function App() {
                   <span className="text-[10px] bg-rose-50 text-rose-700 font-bold px-2 py-0.5 rounded capitalize">
                     {img.category}
                   </span>
-                  <h4 className="text-xs sm:text-sm font-bold text-slate-800 mt-1.5 truncate">
+                  <h4 className="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-200 mt-1.5 truncate">
                     {lang === "EN" ? img.titleEN : img.titleBN}
                   </h4>
                 </div>
@@ -2415,18 +2424,18 @@ export default function App() {
       </section>
 
       {/* --- AUTOMATED HELP DESK CHAT INTERFACE & FAQ SECTION --- */}
-      <section className="py-16 bg-white border-t border-slate-200">
+      <section className="py-16 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-700">
         <div className="max-w-7xl mx-auto px-4">
-          
+
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
-            
+
             {/* Column 1: FAQ segment (6 cols) */}
             <div className="lg:col-span-6 space-y-6">
               <div>
                 <span className="text-xs font-bold text-indigo-700 uppercase tracking-widest">
                   {lang === "EN" ? "COMMON QUESTIONS" : "সাধারণ জিজ্ঞাসা ও উত্তরসমূহ"}
                 </span>
-                <h3 className="text-2xl md:text-3xl font-extrabold text-slate-900 mt-1">
+                <h3 className="text-2xl md:text-3xl font-extrabold text-slate-900 dark:text-slate-100 mt-1">
                   {lang === "EN" ? "Frequently Asked Questions" : "সচরাচর জিজ্ঞাসিত প্রশ্নাবলী (FAQ)"}
                 </h3>
               </div>
@@ -2458,8 +2467,8 @@ export default function App() {
                     aBN: "ভর্তির পর নির্ধারিত সময়ের মধ্যে আমাদের ওয়েবসাইট বা কলেজের ১০৪ নম্বর কক্ষ হতে হাজী জমির উদ্দীন শাফিনা ট্রাস্ট ফান্ডের ফরম সংগ্রহ করে প্রয়োজনীয় প্রমাণাদিসহ জমা দিতে হবে।"
                   }
                 ].map((faq, index) => (
-                  <div key={index} className="bg-slate-50 p-5 rounded-xl border border-slate-200">
-                    <h4 className="font-extrabold text-sm sm:text-base text-slate-900 flex items-start gap-2">
+                  <div key={index} className="bg-slate-50 dark:bg-slate-800 p-5 rounded-xl border border-slate-200 dark:border-slate-700">
+                    <h4 className="font-extrabold text-sm sm:text-base text-slate-900 dark:text-slate-100 flex items-start gap-2">
                       <HelpCircle className="w-5 h-5 text-indigo-600 shrink-0 mt-0.5" />
                       <span>{lang === "EN" ? faq.qEN : faq.qBN}</span>
                     </h4>
@@ -2473,10 +2482,10 @@ export default function App() {
 
             {/* Column 2: Interactive Instant Chat Assistant (6 cols) */}
             <div className="lg:col-span-6 bg-slate-900 text-white rounded-3xl p-6 md:p-8 flex flex-col justify-between shadow-xl relative overflow-hidden">
-              
+
               {/* Background gradient graphics */}
               <div className="absolute top-0 right-0 w-48 h-48 bg-rose-500/10 rounded-full blur-3xl"></div>
-              
+
               <div>
                 <div className="flex items-center justify-between border-b border-slate-800 pb-4 mb-4">
                   <div className="flex items-center gap-3">
@@ -2502,15 +2511,14 @@ export default function App() {
                 {/* Messages Panel */}
                 <div className="h-64 overflow-y-auto space-y-3.5 pr-2 mb-4 scrollbar-thin scrollbar-thumb-slate-800">
                   {chatMessages.map((msg, idx) => (
-                    <div 
-                      key={idx} 
+                    <div
+                      key={idx}
                       className={`flex ${msg.sender === "user" ? "justify-end" : "justify-start"}`}
                     >
-                      <div className={`max-w-[85%] rounded-2xl p-3.5 text-xs ${
-                        msg.sender === "user" 
-                          ? "bg-rose-600 text-white rounded-br-none" 
+                      <div className={`max-w-[85%] rounded-2xl p-3.5 text-xs ${msg.sender === "user"
+                          ? "bg-rose-600 text-white rounded-br-none"
                           : "bg-slate-800 text-slate-100 rounded-bl-none border border-slate-700/60"
-                      }`}>
+                        }`}>
                         <p className="leading-relaxed font-light">{msg.text}</p>
                         <span className="text-[8px] text-slate-400 mt-1 block text-right">
                           {msg.sender === "user" ? "You" : "HJSWC Bot"}
@@ -2565,26 +2573,26 @@ export default function App() {
       </section>
 
       {/* --- CONTACT US & DIRECT QUERY FEEDBACK --- */}
-      <section id="contact-section" className="py-16 bg-slate-50 border-t border-slate-200">
+      <section id="contact-section" className="py-16 bg-slate-50 dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700">
         <div className="max-w-7xl mx-auto px-4">
-          
+
           <div className="text-center max-w-3xl mx-auto mb-12">
             <span className="text-xs font-bold uppercase tracking-wider bg-rose-100 text-rose-800 px-3 py-1 rounded-full">
               {lang === "EN" ? "GET IN TOUCH" : "যোগাযোগ ও অনুসন্ধান শাখা"}
             </span>
-            <h2 className="text-3xl font-extrabold text-slate-900 mt-2">
+            <h2 className="text-3xl font-extrabold text-slate-900 dark:text-slate-100 mt-2">
               {lang === "EN" ? "We are Here to Support You" : "যেকোনো জিজ্ঞাসায় আমাদের লিখুন"}
             </h2>
             <div className="w-16 h-1 bg-rose-600 mx-auto mt-3 rounded-full"></div>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-            
+
             {/* Column 1: Contact card details (5 cols) */}
             <div className="lg:col-span-5 space-y-6">
-              
-              <div className="bg-white p-6 rounded-2xl shadow-xs border border-slate-200">
-                <h3 className="font-extrabold text-base text-slate-900 mb-4 border-b border-slate-100 pb-3">
+
+              <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-xs border border-slate-200 dark:border-slate-700">
+                <h3 className="font-extrabold text-base text-slate-900 dark:text-slate-100 mb-4 border-b border-slate-100 pb-3">
                   {lang === "EN" ? "Official Campus Secretariat" : "কলেজ দাপ্তরিক কার্যালয়"}
                 </h3>
 
@@ -2592,7 +2600,7 @@ export default function App() {
                   <div className="flex gap-3">
                     <MapPin className="w-5 h-5 text-rose-600 shrink-0 mt-0.5" />
                     <div>
-                      <strong className="block text-slate-800">{lang === "EN" ? "College Location" : "কলেজের ভৌগোলিক অবস্থান"}</strong>
+                      <strong className="block text-slate-800 dark:text-slate-200">{lang === "EN" ? "College Location" : "কলেজের ভৌগোলিক অবস্থান"}</strong>
                       <span className="text-slate-500 leading-relaxed block mt-0.5">
                         {t.location}
                       </span>
@@ -2602,7 +2610,7 @@ export default function App() {
                   <div className="flex gap-3">
                     <Phone className="w-5 h-5 text-rose-600 shrink-0 mt-0.5" />
                     <div>
-                      <strong className="block text-slate-800">{lang === "EN" ? "Administrative Telephone" : "প্রশাসনিক ল্যান্ডলাইন / মোবাইল"}</strong>
+                      <strong className="block text-slate-800 dark:text-slate-200">{lang === "EN" ? "Administrative Telephone" : "প্রশাসনিক ল্যান্ডলাইন / মোবাইল"}</strong>
                       <span className="text-slate-500 block mt-0.5">+880 721 772567</span>
                       <span className="text-slate-500 block">+8801712-345678, +8801913-987654</span>
                     </div>
@@ -2611,7 +2619,7 @@ export default function App() {
                   <div className="flex gap-3">
                     <Mail className="w-5 h-5 text-rose-600 shrink-0 mt-0.5" />
                     <div>
-                      <strong className="block text-slate-800">{lang === "EN" ? "Official Email" : "অফিসিয়াল ইমেইল এড্রেস"}</strong>
+                      <strong className="block text-slate-800 dark:text-slate-200">{lang === "EN" ? "Official Email" : "অফিসিয়াল ইমেইল এড্রেস"}</strong>
                       <span className="text-slate-500 block mt-0.5">info@shafinacollege.online</span>
                       <span className="text-slate-500 block">principal@shafinacollege.online</span>
                     </div>
@@ -2620,7 +2628,7 @@ export default function App() {
                   <div className="flex gap-3">
                     <Clock className="w-5 h-5 text-rose-600 shrink-0 mt-0.5" />
                     <div>
-                      <strong className="block text-slate-800">{lang === "EN" ? "Academic Office Hours" : "দাপ্তরিক সময়সূচী"}</strong>
+                      <strong className="block text-slate-800 dark:text-slate-200">{lang === "EN" ? "Academic Office Hours" : "দাপ্তরিক সময়সূচী"}</strong>
                       <span className="text-slate-500 block mt-0.5">
                         {lang === "EN" ? "Saturday - Thursday: 9:00 AM - 4:00 PM" : "শনিবার থেকে বৃহস্পতিবার: সকাল ৯:০০ টা - বিকেল ৪:০০ টা"}
                       </span>
@@ -2642,20 +2650,20 @@ export default function App() {
                   </div>
                   <h4 className="font-bold text-slate-100">{t.collegeNameShort}</h4>
                   <p className="text-[11px] text-slate-400 leading-relaxed">
-                    {lang === "EN" 
+                    {lang === "EN"
                       ? "Located behind the Deputy Commissioner (DC) Office, near Laxmipur Vatapara. Easily accessible by Auto-rickshaw from Rajshahi Railway Station."
                       : "রাজশাহী জেলা প্রশাসক (ডিসি) কার্যালয়ের পেছনের সড়ক দিয়ে লক্ষ্মীপুর ভাটাপাড়া মোড়ে অবস্থিত। যেকোনো স্থানীয় বাহনযোগে সহজে যাতায়াত করা যায়।"}
                   </p>
-                  
+
                   {/* Embedded Google Map */}
                   <div className="border border-slate-800 rounded-xl overflow-hidden mt-3 shadow-inner">
-                    <iframe 
+                    <iframe
                       src="https://maps.google.com/maps?q=24.3739698,88.5705294&z=17&output=embed"
-                      width="100%" 
-                      height="160" 
-                      style={{ border: 0 }} 
-                      allowFullScreen={true} 
-                      loading="lazy" 
+                      width="100%"
+                      height="160"
+                      style={{ border: 0 }}
+                      allowFullScreen={true}
+                      loading="lazy"
                       referrerPolicy="no-referrer-when-downgrade"
                       title="College Location Map"
                       className="opacity-90 hover:opacity-100 transition-opacity"
@@ -2677,12 +2685,12 @@ export default function App() {
             </div>
 
             {/* Column 2: Interactive Query send form (7 cols) */}
-            <div className="lg:col-span-7 bg-white p-6 md:p-8 rounded-2xl shadow-xs border border-slate-200">
-              <h3 className="font-extrabold text-base text-slate-900 mb-2">
+            <div className="lg:col-span-7 bg-white dark:bg-slate-900 p-6 md:p-8 rounded-2xl shadow-xs border border-slate-200 dark:border-slate-700">
+              <h3 className="font-extrabold text-base text-slate-900 dark:text-slate-100 mb-2">
                 {lang === "EN" ? "Direct Academic Inquiry Form" : "সরাসরি জিজ্ঞাসা ও তথ্য জানার ফরম"}
               </h3>
               <p className="text-xs text-slate-500 mb-6 leading-relaxed">
-                {lang === "EN" 
+                {lang === "EN"
                   ? "Are you looking to take admission or have questions regarding scholarships? Write us and our administrative support team will answer back soon."
                   : "ভর্তি প্রক্রিয়া, ট্রাস্ট ফান্ড সুবিধা কিংবা অন্যান্য তথ্য জানতে নিচের ফরমটি পূরণ করে বার্তা পাঠান। আমাদের প্রতিনিধি দল দ্রুত যোগাযোগ করবে।"}
               </p>
@@ -2695,7 +2703,7 @@ export default function App() {
                       {lang === "EN" ? "Query Sent Successfully!" : "বার্তাটি সফলভাবে পাঠানো হয়েছে!"}
                     </h5>
                     <p className="mt-1">
-                      {lang === "EN" 
+                      {lang === "EN"
                         ? "Thank you! We have recorded your query in our local sandbox. Our help desk will reply soon."
                         : "ধন্যবাদ! আপনার বার্তাটি আমাদের ডেমো সিস্টেমে সংরক্ষিত হয়েছে। শীঘ্রই ইমেইল বা মোবাইলে যোগাযোগ করা হবে।"}
                     </p>
@@ -2715,7 +2723,7 @@ export default function App() {
                       placeholder="e.g. Sharmin Akter"
                       value={contactName}
                       onChange={(e) => setContactName(e.target.value)}
-                      className="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs text-slate-800 focus:outline-none focus:border-rose-500"
+                      className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-2.5 text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-rose-500"
                     />
                   </div>
 
@@ -2728,7 +2736,7 @@ export default function App() {
                       placeholder="e.g. sharmin@example.com"
                       value={contactEmail}
                       onChange={(e) => setContactEmail(e.target.value)}
-                      className="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs text-slate-800 focus:outline-none focus:border-rose-500"
+                      className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-2.5 text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-rose-500"
                     />
                   </div>
                 </div>
@@ -2743,7 +2751,7 @@ export default function App() {
                     placeholder={lang === "EN" ? "Please detail your admission or course query here..." : "আপনার ভর্তি বা অন্যান্য কাঙ্ক্ষিত প্রশ্নটি বিস্তারিতভাবে লিখুন..."}
                     value={contactMessage}
                     onChange={(e) => setContactMessage(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs text-slate-800 focus:outline-none focus:border-rose-500"
+                    className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-2.5 text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-rose-500"
                   ></textarea>
                 </div>
 
@@ -2758,15 +2766,15 @@ export default function App() {
 
               {/* Display previously simulated queries if any */}
               {submittedQueries.length > 0 && (
-                <div className="mt-8 pt-6 border-t border-slate-200">
+                <div className="mt-8 pt-6 border-t border-slate-200 dark:border-slate-700">
                   <h4 className="font-extrabold text-xs text-slate-500 uppercase tracking-widest mb-3">
                     {lang === "EN" ? "Submitted Queries (This Session)" : "দাখিলকৃত বার্তা সমূহ (চলতি সেশন)"}
                   </h4>
                   <div className="space-y-3.5">
                     {submittedQueries.map((query, index) => (
-                      <div key={index} className="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                      <div key={index} className="bg-slate-50 dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700">
                         <div className="flex justify-between items-center mb-1 text-[11px]">
-                          <strong className="text-slate-800">{query.name}</strong>
+                          <strong className="text-slate-800 dark:text-slate-200">{query.name}</strong>
                           <span className="text-slate-400 font-mono">{query.date}</span>
                         </div>
                         <p className="text-xs text-slate-600 leading-relaxed">
@@ -2792,9 +2800,9 @@ export default function App() {
       {/* --- FOOTER DESK --- */}
       <footer className="bg-slate-950 text-slate-300 border-t border-rose-950 pt-16 pb-8">
         <div className="max-w-7xl mx-auto px-4">
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
-            
+
             {/* College Intro brand */}
             <div className="space-y-4">
               <div className="flex items-center gap-2">
@@ -2808,9 +2816,9 @@ export default function App() {
                   <span className="text-[10px] text-slate-500">EIIN - 127037 • Rajshahi</span>
                 </div>
               </div>
-              
+
               <p className="text-xs text-slate-400 leading-relaxed font-light">
-                {lang === "EN" 
+                {lang === "EN"
                   ? "A prestigious women's degree college established in 1995 behind the DC office in Rajpara, Rajshahi, creating leaders of tomorrow."
                   : "১৯৯৫ সালে রাজশাহীর রাজপাড়ায় প্রতিষ্ঠিত একটি ঐতিহ্যবাহী বেসরকারি মহিলা ডিগ্রি কলেজ, যা তিন দশক ধরে মেধা ও নৈতিকতার শিক্ষা দিয়ে চলেছে।"}
               </p>
@@ -2935,12 +2943,12 @@ export default function App() {
           {/* LOWER COPYRIGHT BAR */}
           <div className="border-t border-slate-800 pt-8 text-center text-xs text-slate-500 space-y-3">
             <p>
-              {lang === "EN" 
-                ? "© 2026 Haji Jamir Uddin Shafina Women's Degree College. Luxmipur Vatapara, Rajpara, Rajshahi, Bangladesh. All Rights Reserved." 
+              {lang === "EN"
+                ? "© 2026 Haji Jamir Uddin Shafina Women's Degree College. Luxmipur Vatapara, Rajpara, Rajshahi, Bangladesh. All Rights Reserved."
                 : "© ২০২৬ হাজী জমির উদ্দীন শাফিনা মহিলা ডিগ্রী কলেজ। লক্ষ্মীপুর ভাটাপাড়া, ডাকঘর: রাজশাহী জিপিও-৬০০০, রাজপাড়া, রাজশাহী, বাংলাদেশ। সর্বস্বত্ব সংরক্ষিত।"}
             </p>
             <p className="text-[10px] text-slate-600">
-              Developed & Maintained in affiliation with National University and BISE Rajshahi. 
+              Developed & Maintained in affiliation with National University and BISE Rajshahi.
               Authorized by Government of People's Republic of Bangladesh. (College Code: 1029, 2567)
             </p>
           </div>
@@ -2951,8 +2959,8 @@ export default function App() {
       {/* --- NOTICE DETAIL MODAL VIEW --- */}
       {viewingNotice && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-2xl max-w-2xl w-full border border-slate-200 overflow-hidden shadow-2xl relative">
-            
+          <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-2xl w-full border border-slate-200 dark:border-slate-700 overflow-hidden shadow-2xl relative">
+
             {/* Modal Header */}
             <div className="bg-slate-900 text-white p-5 flex justify-between items-start">
               <div>
@@ -2973,9 +2981,9 @@ export default function App() {
 
             {/* Modal Body with letterhead look */}
             <div className="p-6 md:p-8 space-y-4">
-              
+
               {/* Fake letterhead */}
-              <div className="text-center border-b border-dashed border-slate-200 pb-4 mb-4">
+              <div className="text-center border-b border-dashed border-slate-200 dark:border-slate-700 pb-4 mb-4">
                 <h4 className="font-extrabold text-slate-950 uppercase tracking-wide text-xs">
                   {t.collegeName}
                 </h4>
@@ -2984,11 +2992,11 @@ export default function App() {
                 </p>
               </div>
 
-              <h3 className="font-extrabold text-base md:text-lg text-slate-900 leading-snug">
+              <h3 className="font-extrabold text-base md:text-lg text-slate-900 dark:text-slate-100 leading-snug">
                 {lang === "EN" ? viewingNotice.titleEN : viewingNotice.titleBN}
               </h3>
 
-              <div className="text-xs sm:text-sm text-slate-700 leading-relaxed whitespace-pre-line font-light py-2">
+              <div className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed whitespace-pre-line font-light py-2">
                 {lang === "EN" ? viewingNotice.contentEN : viewingNotice.contentBN}
               </div>
 
@@ -2997,14 +3005,14 @@ export default function App() {
                 <div className="text-slate-400 text-[10px]">
                   ID Reference: HJSWC-N{viewingNotice.id}
                 </div>
-                
+
                 <div className="text-right">
                   <div className="inline-block relative">
                     {/* Simulated hand stamp */}
                     <div className="absolute -top-6 right-2 w-16 h-16 rounded-full border-2 border-red-500/30 flex items-center justify-center text-[10px] text-red-500/40 font-bold uppercase rotate-12 select-none pointer-events-none">
                       APPROVED
                     </div>
-                    <span className="block font-bold text-xs text-slate-800">{t.principalName}</span>
+                    <span className="block font-bold text-xs text-slate-800 dark:text-slate-200">{t.principalName}</span>
                     <span className="block text-[10px] text-slate-400">{t.principalDegree}</span>
                   </div>
                 </div>
@@ -3013,7 +3021,7 @@ export default function App() {
             </div>
 
             {/* Modal footer */}
-            <div className="bg-slate-50 p-4 border-t border-slate-100 flex justify-end gap-2">
+            <div className="bg-slate-50 dark:bg-slate-800 p-4 border-t border-slate-100 flex justify-end gap-2">
               <button
                 onClick={() => {
                   const title = lang === "EN" ? viewingNotice.titleEN : viewingNotice.titleBN;
@@ -3048,29 +3056,29 @@ export default function App() {
 
       {/* --- LIGHTBOX PHOTO GALLERY VIEW --- */}
       {lightboxImg && (
-        <div 
+        <div
           className="fixed inset-0 bg-black/90 backdrop-blur-xs flex flex-col items-center justify-center p-4 z-50 cursor-zoom-out"
           onClick={() => setLightboxImg(null)}
         >
           <div className="max-w-4xl w-full space-y-2 text-center" onClick={(e) => e.stopPropagation()}>
             <div className="flex justify-between items-center text-white pb-2">
               <span className="text-xs text-rose-400 font-bold uppercase tracking-wider">HJSWC Photo Album</span>
-              <button 
+              <button
                 onClick={() => setLightboxImg(null)}
-                className="text-white hover:text-rose-400 text-lg font-bold cursor-pointer bg-white/10 w-8 h-8 rounded-full flex items-center justify-center"
+                className="text-white hover:text-rose-400 text-lg font-bold cursor-pointer bg-white dark:bg-slate-900/10 w-8 h-8 rounded-full flex items-center justify-center"
               >
                 ✕
               </button>
             </div>
-            
+
             <div className="bg-slate-950 rounded-2xl overflow-hidden border border-slate-800">
-              <img 
-                src={lightboxImg.url} 
-                alt={lightboxImg.title} 
-                className="max-h-[75vh] mx-auto object-contain" 
+              <img
+                src={lightboxImg.url}
+                alt={lightboxImg.title}
+                className="max-h-[75vh] mx-auto object-contain"
               />
             </div>
-            
+
             <p className="text-slate-200 text-sm font-semibold pt-1">
               {lightboxImg.title}
             </p>
