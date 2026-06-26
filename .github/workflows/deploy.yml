@@ -25,6 +25,11 @@ jobs:
     - name: 🏗️ Build Project
       run: npm run build
       
+    - name: 🔍 Debug FTP Directory
+      run: |
+        sudo apt-get install lftp -y
+        lftp -c "open -u ${{ secrets.FTP_USERNAME }},${{ secrets.FTP_PASSWORD }} ftp://${{ secrets.FTP_SERVER }}; ls -la; pwd"
+
     - name: 📂 Sync files to cPanel FTP
       uses: SamKirkland/FTP-Deploy-Action@v4.3.5
       with:
