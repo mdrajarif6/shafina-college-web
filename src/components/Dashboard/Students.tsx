@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, UserPlus, Filter, Trash2, CheckCircle, XCircle } from 'lucide-react';
+import { Search, UserPlus, Filter, Trash2,   } from 'lucide-react';
 
 export type Student = {
   id?: number;

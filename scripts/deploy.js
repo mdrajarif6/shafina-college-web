@@ -35,6 +35,11 @@ async function deploy() {
         
         console.log("Upload complete! /dist folder is synced.");
 
+        // Upload .htaccess to bust cache
+        console.log("Uploading .htaccess to bust cache...");
+        await client.cd("/");
+        await client.uploadFrom("c:/xampp/htdocs/.htaccess", ".htaccess");
+
         // Now upload the /api folder
         console.log("Uploading the /api folder...");
         await client.cd("/");

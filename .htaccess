@@ -14,3 +14,7 @@ RewriteRule ^(.*)$ /dist/$1 [L]
         Header set Expires "Wed, 11 Jan 1984 05:00:00 GMT"
     </IfModule>
 </FilesMatch>
+
+<IfModule LiteSpeed>
+    CacheDisable public /
+</IfModule>

@@ -1,6 +1,5 @@
 import React, { useState, useMemo } from "react";
 import {
-  GraduationCap,
   Clock,
   Phone,
   Mail,
@@ -29,6 +28,7 @@ import {
   X
 } from "lucide-react";
 
+import apkVersion from "../apk-version.json";
 import {
   contentEN,
   contentBN,
@@ -51,6 +51,22 @@ export default function App() {
   // Language State
   const [lang, setLang] = useState<"EN" | "BN">("BN"); // Default to BN (Bengali) for authentic feel, can toggle to EN
   const t: CollegeTranslation = lang === "EN" ? contentEN : contentBN;
+
+  const handleInstallClick = async () => {
+    // Detect iOS devices (iPhone, iPad, iPod)
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
+    
+    if (isIOS) {
+      // iOS users cannot install APKs, so we must rely on PWA instructions
+      alert(lang === "EN" ? "To install on iOS: tap the Share button (square with an arrow pointing up) at the bottom of your screen, then select 'Add to Home Screen'." : "iOS এ ইন্সটল করতে: স্ক্রিনের নিচে Share বাটনে ট্যাপ করুন এবং 'Add to Home Screen' নির্বাচন করুন।");
+    } else {
+      // For Android and Desktop, trigger the direct APK download!
+      const a = document.createElement('a');
+      a.href = `/${apkVersion.filename}`;
+      a.download = apkVersion.filename;
+      a.click();
+    }
+  };
 
   // Data States
   const [notices, setNotices] = useState<any[]>([]);
@@ -593,10 +609,8 @@ export default function App() {
           {/* Logo Brand Brand */}
           <div className="flex items-center gap-3.5 text-center lg:text-left">
             <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-gradient-to-tr from-rose-700 via-pink-600 to-rose-900 p-0.5 flex items-center justify-center shadow-md">
-              <div className="w-full h-full bg-white rounded-full flex flex-col items-center justify-center text-rose-800 relative overflow-hidden">
-                <GraduationCap className="w-8 h-8 text-rose-700 mb-[-2px]" />
-                <span className="text-[10px] font-extrabold uppercase tracking-tighter text-rose-900 leading-none">HJSWC</span>
-                <span className="text-[7px] text-slate-500 uppercase">Est: 1995</span>
+              <div className="w-full h-full bg-white rounded-full flex flex-col items-center justify-center relative overflow-hidden">
+                <img src="/college-logo.png" alt="HJSWC Logo" className="w-full h-full object-contain p-1" />
               </div>
             </div>
             
@@ -670,8 +684,7 @@ export default function App() {
                 { id: "notices", label: t.navNotices },
                 { id: "campus-map", label: t.navCampusMap },
                 { id: "gallery", label: t.navGallery },
-                { id: "contact", label: t.navContact },
-                { id: "dashboard", label: lang === "EN" ? "Dashboard" : "ড্যাশবোর্ড" }
+                { id: "contact", label: t.navContact }
               ].map((tab) => (
                 <button
                   key={tab.id}
@@ -801,6 +814,14 @@ export default function App() {
                 >
                   <FileText className="w-4 h-4" />
                   <span>{lang === "EN" ? "Notice Feed" : "নোটিশ সমূহ"}</span>
+                </button>
+                
+                <button
+                  onClick={handleInstallClick}
+                  className="bg-emerald-600 hover:bg-emerald-500 border border-emerald-500 text-white font-semibold text-sm px-6 py-3 rounded-xl shadow-[0_0_15px_rgba(16,185,129,0.4)] transition-all cursor-pointer flex items-center gap-2 animate-pulse"
+                >
+                  <Download className="w-4 h-4" />
+                  <span>{lang === "EN" ? "Download App" : "অ্যাপ ডাউনলোড করুন"}</span>
                 </button>
               </div>
             </div>
