@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Print QR Code - Shafina College</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Noto+Sans+Bengali:wght@400;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', 'Noto Sans Bengali', sans-serif;
+            background-color: #f3f4f6;
+            margin: 0;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .print-container {
+            background: white;
+            width: 210mm;
+            min-height: 297mm;
+            padding: 2cm;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            border-radius: 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .corner-decoration {
+            position: absolute;
+            width: 150px;
+            height: 150px;
+            z-index: 0;
+        }
+
+        .top-left { top: 0; left: 0; border-top: 15px solid #2563eb; border-left: 15px solid #2563eb; border-top-left-radius: 1rem; }
+        .top-right { top: 0; right: 0; border-top: 15px solid #2563eb; border-right: 15px solid #2563eb; border-top-right-radius: 1rem; }
+        .bottom-left { bottom: 0; left: 0; border-bottom: 15px solid #2563eb; border-left: 15px solid #2563eb; border-bottom-left-radius: 1rem; }
+        .bottom-right { bottom: 0; right: 0; border-bottom: 15px solid #2563eb; border-right: 15px solid #2563eb; border-bottom-right-radius: 1rem; }
+
+        .content {
+            z-index: 10;
+            text-align: center;
+            width: 100%;
+        }
+
+        .qr-wrapper {
+            background: #ffffff;
+            padding: 1.5rem;
+            border-radius: 1.5rem;
+            box-shadow: 0 10px 25px rgba(37, 99, 235, 0.15);
+            border: 4px dashed #93c5fd;
+            display: inline-block;
+            margin: 2rem 0;
+            position: relative;
+        }
+
+        .qr-wrapper::before {
+            content: '';
+            position: absolute;
+            top: -10px; left: -10px; right: -10px; bottom: -10px;
+            border: 2px solid #2563eb;
+            border-radius: 1.8rem;
+            z-index: -1;
+        }
+
+        @media print {
+            body {
+                background: white;
+                margin: 0;
+                padding: 0;
+            }
+            .print-container {
+                width: 100%;
+                min-height: 100vh;
+                box-shadow: none;
+                border-radius: 0;
+                padding: 1cm;
+            }
+            .no-print {
+                display: none !important;
+            }
+            .top-left { border-top-left-radius: 0; }
+            .top-right { border-top-right-radius: 0; }
+            .bottom-left { border-bottom-left-radius: 0; }
+            .bottom-right { border-bottom-right-radius: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <button onclick="window.print()" class="no-print mb-8 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-full shadow-lg transition transform hover:scale-105 flex items-center gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+        </svg>
+        Print QR Code
+    </button>
+
+    <div class="print-container">
+        <div class="corner-decoration top-left"></div>
+        <div class="corner-decoration top-right"></div>
+        <div class="corner-decoration bottom-left"></div>
+        <div class="corner-decoration bottom-right"></div>
+
+        <div class="content flex flex-col items-center justify-center h-full">
+            <img src="./college-logo-round.png" alt="College Logo" class="w-32 h-32 mb-6 shadow-xl rounded-full border-4 border-white">
+            
+            <h1 class="text-5xl font-extrabold text-blue-900 mb-2 uppercase tracking-wide">Shafina College</h1>
+            <h2 class="text-2xl font-semibold text-blue-600 mb-8 tracking-wider">Smart Campus System</h2>
+
+            <div class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3 px-10 rounded-full text-2xl font-bold shadow-lg mb-6">
+                Scan for Attendance
+            </div>
+
+            <p class="text-xl text-gray-600 mb-4 font-medium max-w-lg">
+                Open the <strong>Shafina College App</strong> on your phone and scan this QR code to mark your daily attendance securely.
+            </p>
+
+            <div class="qr-wrapper">
+                <img src="./campus-qr.png" alt="Attendance QR" class="w-80 h-80 object-contain">
+            </div>
+
+            <p class="text-3xl font-bold text-gray-800 mt-6 mb-2">
+                Haji Jamir Uddin Shafina Women's Degree College
+            </p>
+            <p class="text-lg text-gray-500 font-medium">
+                Laxmipur vatapara, Rajshahi | Established: 1995
+            </p>
+
+            <div class="mt-12 text-sm text-gray-400 font-semibold uppercase tracking-widest border-t-2 border-dashed border-gray-200 pt-6 w-full">
+                Powered by Smart Campus System &bull; Please do not tamper with this code
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

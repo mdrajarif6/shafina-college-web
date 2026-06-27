@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
-import { LogIn, User, Phone, ArrowLeft, BookOpen, Clock, Award, Calendar } from 'lucide-react';
+import { User, Phone, BookOpen, Clock, Award, Calendar, ArrowLeft, LogIn } from 'lucide-react';
 import { SmartAttendance } from '../SmartAttendance';
 
 interface StudentPortalProps {
   lang: "EN" | "BN" | "AR";
-  onBack: () => void;
 }
 
-export function StudentPortal({ lang, onBack }: StudentPortalProps) {
+export function StudentPortal({ lang }: StudentPortalProps) {
   const [roll, setRoll] = useState('');
   const [pin, setPin] = useState('');
   const [phone, setPhone] = useState('');
@@ -205,9 +204,7 @@ export function StudentPortal({ lang, onBack }: StudentPortalProps) {
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-800 flex flex-col items-center justify-center py-12 px-4 font-sans relative overflow-hidden">
       
-      <button onClick={onBack} className="absolute top-8 left-8 text-slate-500 hover:text-slate-800 dark:text-slate-200 transition-colors flex items-center gap-2 font-medium bg-white dark:bg-slate-900 px-4 py-2 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
-        <ArrowLeft className="w-4 h-4" /> {lang === 'EN' ? 'Back to Home' : 'হোমপেজে ফিরে যান'}
-      </button>
+
 
       <div className="bg-white dark:bg-slate-900 w-full max-w-md p-8 rounded-3xl shadow-xl border border-slate-100 relative z-10">
         <div className="w-16 h-16 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center mx-auto mb-6">

@@ -1,4 +1,7 @@
 import React, { useState, useMemo } from "react";
+import { Navigation } from "./components/Navigation";
+import { PlaceholderPage } from "./components/PlaceholderPage";
+import { BlogSection } from "./components/BlogSection";
 import {
   Clock,
   Phone,
@@ -22,9 +25,7 @@ import {
   Printer,
   Sparkles,
   ArrowRight,
-  BookMarked,
-  Menu,
-  X
+  BookMarked
 } from "lucide-react";
 
 
@@ -177,7 +178,6 @@ export default function App() {
 
   // Navigation Active Section State
   const [activeTab, setActiveTab] = useState<string>(() => localStorage.getItem('activeTab') || 'home');
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   React.useEffect(() => {
     localStorage.setItem('isAuthenticated', String(isAuthenticated));
@@ -533,50 +533,7 @@ export default function App() {
     window.print();
   };
 
-  if (activeTab === "student_portal") {
-    return <StudentPortal lang={lang} onBack={() => setActiveTab("home")} />;
-  }
-
-  if (activeTab === "teacher_portal") {
-    return <TeacherPortal lang={lang} onBack={() => setActiveTab("home")} />;
-  }
-
-  if (activeTab === "dashboard") {
-    if (!isAuthenticated) {
-      return (
-        <AdminLogin
-          lang={lang}
-          correctPin={settings.admin_pin || 'admin123'}
-          onLogin={() => setIsAuthenticated(true)}
-          onCancel={() => setActiveTab("home")}
-        />
-      );
-    }
-
-    return (
-      <DashboardLayout
-        lang={lang}
-        notices={notices}
-        setNotices={setNotices}
-        applications={applicationsList}
-        setApplications={setApplicationsList}
-        students={studentsList}
-        setStudents={setStudentsList}
-        teachers={teachersList}
-        setTeachers={setTeachersList}
-        results={results}
-        setResults={setResults}
-        attendance={attendance}
-        setAttendance={setAttendance}
-        settings={settings}
-        setSettings={setSettings}
-        onLogout={() => {
-          setIsAuthenticated(false);
-          setActiveTab("home");
-        }}
-      />
-    );
-  }
+  const placeholderTabs = ['at_a_glance', 'history', 'why_study', 'achievements', 'news_events', 'faculty_staff', 'code_conducts', 'guideline_parents', 'dress_code', 'fees_payment', 'scholarships', 'transfer_procedures', 'videos'];
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-200 font-bilingual flex flex-col selection:bg-rose-600 selection:text-white">
@@ -688,82 +645,164 @@ export default function App() {
             </div>
           </div>
 
-          {/* Quick Contact & Info Card */}
-          <div className="flex items-center gap-3 shrink-0">
-            <button
-              onClick={() => {
-                setActiveTab("dashboard");
-                window.scrollTo({ top: 0, behavior: "smooth" });
-              }}
-              className="bg-slate-900 hover:bg-black text-white font-bold text-sm px-5 py-2.5 rounded-xl shadow-md transition-all cursor-pointer flex items-center gap-2 border-2 border-slate-700 animate-pulse"
-            >
-              <Users className="w-4 h-4 text-rose-400" />
-              <span>{lang === "EN" ? "Admin Dashboard" : "ড্যাশবোর্ড"}</span>
-            </button>
-            <button
-              onClick={() => {
-                setActiveTab("admission");
-                document.getElementById("admission-section")?.scrollIntoView({ behavior: "smooth" });
-              }}
-              className="bg-gradient-to-r from-rose-600 to-pink-600 hover:from-rose-700 hover:to-pink-700 text-white font-semibold text-sm px-5 py-2.5 rounded-xl shadow-md hover:shadow-rose-100 transition-all cursor-pointer flex items-center gap-2"
-            >
-              <Award className="w-4 h-4 text-rose-200" />
-              <span>{t.applyNowBtn}</span>
-            </button>
-          </div>
+
         </div>
 
         {/* NAVIGATION LINKS CONTAINER */}
-        <nav className="bg-white dark:bg-slate-900 border-t border-slate-100 mt-4 relative z-40">
-          <div className="max-w-7xl mx-auto px-4">
-
-            {/* Mobile Menu Toggle */}
-            <div className="md:hidden flex justify-between items-center py-2">
-              <span className="text-sm font-bold text-slate-600">{lang === "EN" ? "Main Menu" : "মূল মেনু"}</span>
-              <button
-                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="p-2 bg-slate-100 dark:bg-slate-800 rounded-lg text-slate-600 hover:bg-rose-50 hover:text-rose-600 transition-colors"
-              >
-                {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-              </button>
-            </div>
-
-            <div className={`${isMobileMenuOpen ? "flex" : "hidden"} md:flex flex-col md:flex-row flex-wrap justify-center md:justify-start gap-1 py-2 md:py-1 max-h-[70vh] overflow-y-auto md:max-h-none md:overflow-visible`}>
-              {[
-                { id: "home", label: t.navHome },
-                { id: "about", label: t.navAbout },
-                { id: "programs", label: t.navPrograms },
-                { id: "admission", label: t.navAdmission },
-                { id: "notices", label: t.navNotices },
-                { id: "campus-map", label: t.navCampusMap },
-                { id: "gallery", label: t.navGallery },
-                { id: "student_portal", label: lang === "EN" ? "Student Portal" : "স্টুডেন্ট পোর্টাল" },
-                { id: "teacher_portal", label: lang === "EN" ? "Teacher Portal" : "শিক্ষক পোর্টাল" },
-                { id: "contact", label: t.navContact }
-              ].map((tab) => (
-                <button
-                  key={tab.id}
-                  onClick={() => {
-                    setActiveTab(tab.id);
-                    setIsMobileMenuOpen(false);
-                    document.getElementById(`${tab.id}-section`)?.scrollIntoView({ behavior: "smooth" });
-                  }}
-                  className={`w-full md:w-auto text-left md:text-center px-4 md:px-3 py-3 md:py-2 text-sm font-semibold rounded-lg transition-all cursor-pointer ${activeTab === tab.id
-                      ? "bg-rose-50 text-rose-700 border-l-4 md:border-l-0 md:border-b-2 border-rose-600"
-                      : tab.id === "dashboard"
-                        ? "bg-slate-900 text-white hover:bg-slate-800 shadow-sm mt-2 md:mt-0"
-                        : "text-slate-600 hover:bg-slate-50 dark:bg-slate-800 hover:text-rose-600"
-                    }`}
-                >
-                  {tab.label}
-                </button>
-              ))}
-            </div>
-          </div>
-        </nav>
+        <Navigation lang={lang} t={t} activeTab={activeTab} setActiveTab={setActiveTab} />
       </div>
 
+      {/* Dynamic Page Content */}
+      <main className="flex-1">
+        {placeholderTabs.includes(activeTab) && (
+          <PlaceholderPage title={
+            {
+              'at_a_glance': lang === "EN" ? "At a Glance" : "এক নজরে",
+              'history': lang === "EN" ? "History" : "ইতিহাস",
+              'why_study': lang === "EN" ? "Why Study at HJSWC" : "কেন এখানে পড়বেন",
+              'achievements': lang === "EN" ? "Achievements" : "অর্জনসমূহ",
+              'news_events': lang === "EN" ? "News & Events" : "খবর ও ইভেন্ট",
+              'faculty_staff': lang === "EN" ? "Faculty & Staff Info" : "শিক্ষক ও কর্মচারী তথ্য",
+              'code_conducts': lang === "EN" ? "Code of Conducts" : "আচরণবিধি",
+              'guideline_parents': lang === "EN" ? "Guideline for Parents" : "অভিভাবকদের জন্য নির্দেশিকা",
+              'dress_code': lang === "EN" ? "Dress Code" : "ড্রেস কোড",
+              'fees_payment': lang === "EN" ? "Fees & Payment" : "ফিস ও পেমেন্ট",
+              'scholarships': lang === "EN" ? "Scholarships" : "বৃত্তি",
+              'transfer_procedures': lang === "EN" ? "Transfer Procedures" : "ট্রান্সফার পদ্ধতি",
+              'videos': lang === "EN" ? "Videos" : "ভিডিও"
+            }[activeTab] || ""
+          } lang={lang} />
+        )}
+        
+        {activeTab === "msg_president" && (
+          <section className="py-16 bg-slate-50 dark:bg-slate-800 min-h-screen">
+            <div className="max-w-4xl mx-auto px-4">
+
+              
+              <div className="bg-white dark:bg-slate-900 rounded-xl shadow-2xl p-8 md:p-12 border border-slate-200 dark:border-slate-700">
+                <div className="flex flex-col md:flex-row items-center md:items-start gap-6 border-b border-slate-200 dark:border-slate-700/60 pb-8 mb-8">
+                  <div className="w-24 h-24 md:w-32 md:h-32 rounded-full bg-indigo-100 shrink-0 border-2 border-indigo-500 overflow-hidden shadow-lg">
+                    <img src="https://web.academyims.com/storage/2406112/images/speeches/%E0%A6%B6%E0%A6%BE%E0%A6%B9%E0%A6%BE%E0%A6%A8%E0%A7%81%E0%A6%B0%20%E0%A6%87%E0%A6%B8%E0%A6%B2%E0%A6%BE%E0%A6%AE_1754817473.webp" alt="President" className="w-full h-full object-cover" />
+                  </div>
+                  <div className="text-center md:text-left flex-1 mt-2">
+                    <span className="text-sm font-bold text-indigo-600 uppercase tracking-wider block mb-2">
+                      {lang === "EN" ? "Message from the President" : "সভাপতির বাণী"}
+                    </span>
+                    <h3 className="text-2xl md:text-4xl font-extrabold text-slate-900 dark:text-white mt-1 drop-shadow-sm">
+                      {t.presidentName}
+                    </h3>
+                    <p className="text-sm md:text-base text-slate-500 dark:text-slate-400 mt-2 font-medium">
+                      {t.presidentDegree}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="relative">
+                  <span className="text-6xl text-indigo-500/20 font-serif absolute -left-4 -top-6 pointer-events-none">“</span>
+                  <p className="text-base md:text-lg text-slate-700 dark:text-slate-300 leading-[1.8] italic relative z-10 text-justify font-light whitespace-pre-line">
+                    {t.presidentSpeech}
+                  </p>
+                </div>
+
+                <div className="mt-10 pt-6 border-t border-slate-200 dark:border-slate-700/60 flex items-center justify-between text-sm text-slate-500 dark:text-slate-400">
+                  <span>{lang === "EN" ? "Governing Body" : "গভর্নিং বডি"}</span>
+                  <span className="bg-indigo-50 dark:bg-[#242b42] text-indigo-700 dark:text-white border border-indigo-200 dark:border-slate-600 font-bold px-4 py-1.5 rounded-lg shadow-sm">
+                    {lang === "EN" ? "President" : "সভাপতি"}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </section>
+        )}
+
+        {activeTab === "msg_principal" && (
+          <section className="py-16 bg-slate-50 dark:bg-slate-800 min-h-screen">
+            <div className="max-w-4xl mx-auto px-4">
+
+              
+              <div className="bg-[#1e2336] rounded-xl shadow-2xl p-8 md:p-12 border border-slate-700">
+                <div className="flex flex-col md:flex-row items-center md:items-start gap-6 border-b border-slate-700/60 pb-8 mb-8">
+                  <div className="w-24 h-24 md:w-32 md:h-32 rounded-full bg-rose-100 shrink-0 border-2 border-slate-500 overflow-hidden shadow-lg">
+                    <img src="https://web.academyims.com/storage/2406112/images/speeches/Principal%20(In%20Charge)_1756757670.webp" alt="Principal" className="w-full h-full object-cover" />
+                  </div>
+                  <div className="text-center md:text-left flex-1 mt-2">
+                    <span className="text-sm font-bold text-rose-600 uppercase tracking-wider block mb-2">
+                      {lang === "EN" ? "Message from the Principal (Acting)" : "অধ্যক্ষ (ভারপ্রাপ্ত) মহোদয়ের বাণী"}
+                    </span>
+                    <h3 className="text-2xl md:text-4xl font-extrabold text-white mt-1 drop-shadow-sm">
+                      {t.principalName}
+                    </h3>
+                    <p className="text-sm md:text-base text-slate-400 mt-2 font-medium">
+                      {lang === "EN" ? "Acting Principal" : "ভারপ্রাপ্ত অধ্যক্ষ"}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="relative">
+                  <span className="text-6xl text-rose-500/40 font-serif absolute -left-4 -top-6 pointer-events-none">“</span>
+                  <p className="text-base text-slate-300 leading-[1.8] italic relative z-10 text-justify font-light">
+                    {lang === "EN" ? (
+                      "The institution, which is located in the western part of the divisional city of Rajshahi, a green city and a city of education, a city of cleanliness and peace, the holy land of Hazrat Shah Makhdum Ruposh (RA) in the basin of the Padma River, has played a leading role in the expansion of women's education. It is Haji Jamir Uddin Shafina Women's Degree College, Rajshahi, established by private initiative. Women cannot lag behind in education. Education enlightens the human mind and awakens the sense of justice and injustice. The contemporary education system designed in line with the changing world brings about proper development in the creativity of the students. Lesson plans and academic calendars are essential for students. Because, if the overall picture of the institution is not ingrained in the hearts of the students, there will be a lack of affection and respect for that institution. That is why the college has taken the heavy responsibility of publishing lesson plans and academic calendars. When will any internal examination of the college be held and which chapters have to be studied for it. Thus they will gradually be able to prepare for the final exam. Also teachers and everyone concerned will be benefited Inshallah. Discipline is life. Human life develops beautifully due to the practice of discipline. We are determined to build ourselves and our beloved motherland. Women should not lag behind in this journey of moving forward in the context of golden dreams and infinite possibilities. So the goal of this college is to play a leading role in women's education. My sincere congratulations and gratitude to all those who have worked tirelessly and cooperated in this publication."
+                    ) : (
+                      "পদ্মা নদীর অববাহিকায় হযরত শাহ মখদুম রূপোশ (রঃ) এর পূণ্যভূমি পরিচ্ছন্ন ও শান্তির শহর, সবুজ নগরী ও শিক্ষা নগরী রাজশাহী বিভাগীয় শহরের পশ্চিমাংশে অবস্থিত নারী শিক্ষা বিস্তারে অগ্রণী ভূমিকা রেখেছে যে বিদ্যাপীঠ সেটি হচ্ছে বেসরকারি উদ্যোগে প্রতিষ্ঠিত হাজী জমির উদ্দীন শাফিনা মহিলা ডিগ্রী কলেজ, রাজশাহী। নারীরা শিক্ষা-দীক্ষায় পিছিয়ে থাকতে পারে না। শিক্ষা মানুষের মনকে আলোকিত করে এবং ন্যায়-অন্যায় বোধকে জাগ্রত করে। পরিবর্তনশীল বিশ্বের সাথে তাল মিলিয়ে প্রণীত যুগোপযোগী শিক্ষা ব্যবস্থা শিক্ষার্থীদের সৃজনশীলতায় যথাযথ বিকাশ ঘটায়। পাঠ পরিকল্পনা ও একাডেমিক ক্যালেন্ডার শিক্ষার্থীদের জন্য অপরিহার্য। কারণ, প্রতিষ্ঠানের সার্বিক চিত্র শিক্ষার্থীদের অন্তরে গ্রথিত না থাকলে সেই প্রতিষ্ঠানের প্রতি তাদের মমত্ববোধ ও শ্রদ্ধাবোধের ঘাটতি থেকেই যায়। এজন্য কলেজ থেকে পাঠ পরিকল্পনা ও একাডেমিক ক্যালেন্ডার প্রকাশের মতো গুরু দায়িত্ব কাঁধে নিয়েছে। কলেজের অভ্যন্তরীণ কোন পরীক্ষা কখন অনুষ্ঠিত হবে এবং তার জন্য কোন কোন অধ্যায় পড়তে হবে। এভাবে পর্যায়ক্রমে তারা চূড়ান্ত পরীক্ষার জন্য প্রস্তুতি গ্রহণে সক্ষম হবে। এছাড়া শিক্ষক মন্ডলি ও সংশ্লিষ্ট সকলেই উপকৃত হবেন ইনশাল্লাহ। শৃঙ্খলাই জীবন। শৃঙ্খলা চর্চার কারণে মানব জীবন সুন্দরভাবে বিকশিত হয়। নিজেদের এবং আমাদের প্রিয় মাতৃভূমি বিনির্মাণে আমরা বদ্ধপরিকর। সোনালী স্বপ্ন এবং অপার সম্ভাবনার প্রেক্ষাপটে এগিয়ে যাওয়ার এমন অভিযাত্রায় নারীদের পিছিয়ে থাকলে চলবে না। তাই নারী শিক্ষায় অগ্রণী ভূমিকা রাখাই এ কলেজের লক্ষ্য। যাঁরা অক্লান্ত পরিশ্রম করে এ প্রকাশনায় সহযোগিতা করেছেন তাদের সকলকে জানাই আমার আন্তরিক অভিনন্দন ও কৃতজ্ঞতা।"
+                    )}
+                  </p>
+                </div>
+
+                <div className="mt-10 pt-6 border-t border-slate-700/60 flex items-center justify-between text-sm text-slate-400">
+                  <span>{lang === "EN" ? "Administration" : "প্রশাসন"}</span>
+                  <span className="bg-[#242b42] text-white border border-slate-600 font-bold px-4 py-1.5 rounded-lg shadow-sm">
+                    {lang === "EN" ? "Principal" : "অধ্যক্ষ"}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </section>
+        )}
+
+        {activeTab === "blog" && <BlogSection lang={lang} />}
+        
+        {activeTab === "student_portal" && <StudentPortal lang={lang} />}
+        
+        {activeTab === "teacher_portal" && <TeacherPortal lang={lang} />}
+        
+        {activeTab === "dashboard" && (
+          !isAuthenticated ? (
+            <AdminLogin
+              lang={lang}
+              correctPin={settings.admin_pin || 'admin123'}
+              onLogin={() => setIsAuthenticated(true)}
+              onCancel={() => setActiveTab("home")}
+            />
+          ) : (
+            <DashboardLayout
+              lang={lang}
+              notices={notices}
+              setNotices={setNotices}
+              applications={applicationsList}
+              setApplications={setApplicationsList}
+              students={studentsList}
+              setStudents={setStudentsList}
+              teachers={teachersList}
+              setTeachers={setTeachersList}
+              results={results}
+              setResults={setResults}
+              attendance={attendance}
+              setAttendance={setAttendance}
+              settings={settings}
+              setSettings={setSettings}
+              onLogout={() => {
+                setIsAuthenticated(false);
+                setActiveTab("home");
+              }}
+            />
+          )
+        )}
+      </main>
+
+
       {/* --- HERO SLIDER / MAIN BANNER --- */}
+      {activeTab === "home" && (
       <section id="home-section" className="relative bg-gradient-to-br from-slate-900 to-rose-950 text-white py-12 md:py-20 overflow-hidden">
 
         {/* Background Decorative Graphic */}
@@ -811,7 +850,7 @@ export default function App() {
                 <button
                   onClick={() => {
                     setActiveTab("admission");
-                    document.getElementById("admission-section")?.scrollIntoView({ behavior: "smooth" });
+                    window.scrollTo({ top: 0, behavior: "smooth" });
                   }}
                   className="bg-rose-600 hover:bg-rose-700 text-white font-bold text-sm px-6 py-3 rounded-xl shadow-lg transition-all cursor-pointer flex items-center gap-2 group"
                 >
@@ -840,13 +879,7 @@ export default function App() {
                   <span>{lang === "EN" ? "Notice Feed" : "নোটিশ সমূহ"}</span>
                 </button>
 
-                <button
-                  onClick={handleInstallClick}
-                  className="bg-emerald-600 hover:bg-emerald-500 border border-emerald-500 text-white font-semibold text-sm px-6 py-3 rounded-xl shadow-[0_0_15px_rgba(16,185,129,0.4)] transition-all cursor-pointer flex items-center gap-2 animate-pulse"
-                >
-                  <Download className="w-4 h-4" />
-                  <span>{lang === "EN" ? "Download App" : "অ্যাপ ডাউনলোড করুন"}</span>
-                </button>
+
               </div>
             </div>
 
@@ -907,7 +940,7 @@ export default function App() {
                 </div>
 
                 {/* Extra Stats overlay box */}
-                <div className="absolute -bottom-6 -left-6 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 p-3.5 rounded-xl shadow-xl hidden md:flex items-center gap-3 border border-slate-100 max-w-xs">
+                <div className="absolute -bottom-6 -right-6 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 p-3.5 rounded-xl shadow-xl hidden md:flex items-center gap-3 border border-slate-100 max-w-xs">
                   <div className="w-10 h-10 rounded-full bg-rose-100 text-rose-700 flex items-center justify-center font-bold">
                     96%
                   </div>
@@ -923,8 +956,11 @@ export default function App() {
           </div>
         </div>
       </section>
+      )}
 
-      {/* --- QUICK STATS GRID --- */}
+      { activeTab === "home" ? (
+<>
+{/* --- QUICK STATS GRID --- */}
       <section className="bg-white dark:bg-slate-900 border-y border-slate-200 dark:border-slate-700 shadow-sm relative z-10">
         <div className="max-w-7xl mx-auto px-4 py-8">
           <div className="grid grid-cols-2 md:grid-cols-5 gap-6 text-center divide-y md:divide-y-0 md:divide-x divide-slate-100">
@@ -967,100 +1003,14 @@ export default function App() {
           </div>
         </div>
       </section>
+</>
+) : null }
 
-      {/* --- ABOUT US / LEADERSHIP SECTION --- */}
-      <section id="about-section" className="py-16 bg-slate-50 dark:bg-slate-800">
-        <div className="max-w-7xl mx-auto px-4">
 
-          <div className="text-center max-w-3xl mx-auto mb-12">
-            <h2 className="text-2xl md:text-4.5xl font-extrabold text-slate-950">
-              {lang === "EN" ? "About Our Institution" : "আমাদের পরিচিতি ও আদর্শ"}
-            </h2>
-            <div className="w-24 h-1.5 bg-rose-600 mx-auto mt-3 rounded-full"></div>
-            <p className="text-slate-600 mt-4 text-sm md:text-base">
-              {lang === "EN"
-                ? "Serving Rajshahi's female students with high secondary and degree level curriculum with a safe, caring, and stimulating environment."
-                : "রাজশাহীর প্রাণকেন্দ্রে নারীদের মানসম্মত ও নৈতিক শিক্ষায় শিক্ষিত করার প্রত্যয়ে প্রতিষ্ঠিত এক অনন্য বিদ্যাপীঠ।"}
-            </p>
-          </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
-
-            {/* CARD 1: PRINCIPAL'S DESK */}
-            <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-md p-6 md:p-8 border border-slate-100 flex flex-col justify-between">
-              <div>
-                <div className="flex items-center gap-4 border-b border-slate-100 pb-5 mb-5">
-                  <div className="w-16 h-16 rounded-full bg-rose-100 shrink-0 border-2 border-rose-200 overflow-hidden">
-                    <img src="https://web.academyims.com/storage/2406112/images/speeches/Principal%20(In%20Charge)_1756757670.webp" alt="Principal" className="w-full h-full object-cover" />
-                  </div>
-                  <div>
-                    <span className="text-xs font-bold text-rose-600 uppercase tracking-wider block">
-                      {t.principalTitle}
-                    </span>
-                    <h3 className="text-lg md:text-xl font-bold text-slate-900 dark:text-slate-100 mt-0.5">
-                      {t.principalName}
-                    </h3>
-                    <p className="text-xs text-slate-500">
-                      {t.principalDegree}
-                    </p>
-                  </div>
-                </div>
-
-                <p className="text-sm text-slate-600 leading-relaxed italic relative pl-4">
-                  <span className="text-4xl text-rose-300 font-serif absolute left-0 top-[-10px] pointer-events-none">“</span>
-                  {t.principalSpeech}
-                </p>
-              </div>
-
-              <div className="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-400">
-                <span>{lang === "EN" ? "Haji Jamir Uddin Shafina Women's College" : "হাজী জমির উদ্দীন শাফিনা মহিলা কলেজ"}</span>
-                <span className="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold px-2.5 py-1 rounded">
-                  {lang === "EN" ? "Principal" : "অধ্যক্ষ"}
-                </span>
-              </div>
-            </div>
-
-            {/* CARD 2: PRESIDENT OF GOVERNING BODY */}
-            <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-md p-6 md:p-8 border border-slate-100 flex flex-col justify-between">
-              <div>
-                <div className="flex items-center gap-4 border-b border-slate-100 pb-5 mb-5">
-                  <div className="w-16 h-16 rounded-full bg-indigo-100 shrink-0 border-2 border-indigo-200 overflow-hidden">
-                    <img src="https://web.academyims.com/storage/2406112/images/speeches/%E0%A6%B6%E0%A6%BE%E0%A6%B9%E0%A6%BE%E0%A6%A8%E0%A7%81%E0%A6%B0%20%E0%A6%87%E0%A6%B8%E0%A6%B2%E0%A6%BE%E0%A6%AE_1754817473.webp" alt="President" className="w-full h-full object-cover" />
-                  </div>
-                  <div>
-                    <span className="text-xs font-bold text-indigo-600 uppercase tracking-wider block">
-                      {t.presidentTitle}
-                    </span>
-                    <h3 className="text-lg md:text-xl font-bold text-slate-900 dark:text-slate-100 mt-0.5">
-                      {t.presidentName}
-                    </h3>
-                    <p className="text-xs text-slate-500">
-                      {t.presidentDegree}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="space-y-4">
-                  <p className="text-sm text-slate-600 leading-relaxed italic relative pl-4">
-                    <span className="text-4xl text-indigo-300 font-serif absolute left-0 top-[-10px] pointer-events-none">“</span>
-                    {t.presidentSpeech}
-                  </p>
-                </div>
-              </div>
-
-              <div className="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-400">
-                <span>{lang === "EN" ? "Governing Body" : "গভর্নিং বডি"}</span>
-                <span className="bg-indigo-100 text-indigo-800 font-bold px-2.5 py-1 rounded">
-                  {lang === "EN" ? "Leadership" : "নেতৃত্ব"}
-                </span>
-              </div>
-            </div>
-
-          </div>
-        </div>
-      </section>
-
-      {/* --- INTUITIVE ACADEMIC PROGRAMS --- */}
+      { activeTab === "programs" ? (
+<>
+{/* --- INTUITIVE ACADEMIC PROGRAMS --- */}
       <section id="programs-section" className="py-16 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-700">
         <div className="max-w-7xl mx-auto px-4">
 
@@ -1087,7 +1037,7 @@ export default function App() {
                 <h3 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-2">
                   {t.hscSection}
                 </h3>
-                <p className="text-xs text-slate-600 mb-6 leading-relaxed">
+                <p className="text-xs text-slate-600 dark:text-slate-400 mb-6 leading-relaxed">
                   {t.hscDetails}
                 </p>
 
@@ -1103,7 +1053,7 @@ export default function App() {
                         <span className="font-bold text-sm text-slate-900 dark:text-slate-100">
                           {lang === "EN" ? group.nameEN : group.nameBN}
                         </span>
-                        <span className="text-[11px] bg-slate-100 dark:bg-slate-800 text-slate-600 px-2 py-0.5 rounded font-mono">
+                        <span className="text-[11px] bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 px-2 py-0.5 rounded font-mono">
                           {group.duration}
                         </span>
                       </div>
@@ -1128,7 +1078,7 @@ export default function App() {
                   onClick={() => {
                     setActiveTab("admission");
                     setEligibilityLevel("hsc");
-                    document.getElementById("admission-section")?.scrollIntoView({ behavior: "smooth" });
+                    window.scrollTo({ top: 0, behavior: "smooth" });
                   }}
                   className="text-xs font-bold text-rose-600 hover:text-rose-800 flex items-center gap-1.5 cursor-pointer"
                 >
@@ -1147,7 +1097,7 @@ export default function App() {
                 <h3 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-2">
                   {t.degreeSection}
                 </h3>
-                <p className="text-xs text-slate-600 mb-6 leading-relaxed">
+                <p className="text-xs text-slate-600 dark:text-slate-400 mb-6 leading-relaxed">
                   {t.degreeDetails}
                 </p>
 
@@ -1188,7 +1138,7 @@ export default function App() {
                   onClick={() => {
                     setActiveTab("admission");
                     setEligibilityLevel("degree");
-                    document.getElementById("admission-section")?.scrollIntoView({ behavior: "smooth" });
+                    window.scrollTo({ top: 0, behavior: "smooth" });
                   }}
                   className="text-xs font-bold text-indigo-600 hover:text-indigo-800 flex items-center gap-1.5 cursor-pointer"
                 >
@@ -1207,7 +1157,7 @@ export default function App() {
                 <h3 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-2">
                   {t.honoursSection}
                 </h3>
-                <p className="text-xs text-slate-600 mb-6 leading-relaxed">
+                <p className="text-xs text-slate-600 dark:text-slate-400 mb-6 leading-relaxed">
                   {t.honoursDetails}
                 </p>
 
@@ -1228,7 +1178,7 @@ export default function App() {
                         </span>
                       </div>
                       <p className="text-[10px] text-slate-500 leading-tight">
-                        <strong className="text-slate-600">{lang === "EN" ? "Eligibility: " : "যোগ্যতা: "}</strong>
+                        <strong className="text-slate-600 dark:text-slate-400">{lang === "EN" ? "Eligibility: " : "যোগ্যতা: "}</strong>
                         {lang === "EN" ? course.eligibilityEN : course.eligibilityBN}
                       </p>
                       <div className="mt-1.5 text-[10px] text-slate-400 flex justify-between">
@@ -1253,9 +1203,13 @@ export default function App() {
           </div>
         </div>
       </section>
+</>
+) : null }
 
-      {/* --- INTERACTIVE ADMISSION PORTAL & ELIGIBILITY CALCULATOR & ADMISSION SLIP GENERATOR --- */}
-      <section id="admission-section" className="py-16 bg-gradient-to-b from-slate-50 to-rose-50/40 border-t border-slate-200 dark:border-slate-700">
+      { activeTab === "admission" ? (
+<>
+{/* --- INTERACTIVE ADMISSION PORTAL & ELIGIBILITY CALCULATOR & ADMISSION SLIP GENERATOR --- */}
+      <section id="admission-section" className="py-16 bg-gradient-to-b from-slate-50 dark:from-slate-800 to-rose-50/40 dark:to-slate-900/40 border-t border-slate-200 dark:border-slate-700">
         <div className="max-w-7xl mx-auto px-4">
 
           <div className="text-center max-w-3xl mx-auto mb-12">
@@ -1265,7 +1219,7 @@ export default function App() {
             <h2 className="text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-slate-100 mt-2">
               {lang === "EN" ? "Dynamic Admission & Eligibility Hub" : "সহজ অনলাইন ভর্তি ও যোগ্যতা নিরূপণ কেন্দ্র"}
             </h2>
-            <p className="text-slate-600 text-sm mt-3">
+            <p className="text-slate-600 dark:text-slate-400 text-sm mt-3">
               {lang === "EN"
                 ? "First, check your eligibility instantly with our GPA calculator, then apply simulated online to receive your official registration slip."
                 : "প্রথমে জিপিএ ক্যালকুলেটর দিয়ে আপনার ভর্তির যোগ্যতা পরীক্ষা করুন, এবং অনলাইনে আবেদন করে সাময়িক আবেদন কপি সংগ্রহ করুন।"}
@@ -1276,14 +1230,14 @@ export default function App() {
 
             {/* COLUMN 1 (4 Cores): ELIGIBILITY CALCULATOR WIDGET */}
             <div className="lg:col-span-5 bg-white dark:bg-slate-900 p-6 md:p-8 rounded-2xl shadow-md border border-rose-100">
-              <h3 className="text-lg font-bold text-slate-950 flex items-center gap-2 border-b border-slate-100 pb-3 mb-4">
+              <h3 className="text-lg font-bold text-slate-950 dark:text-slate-50 flex items-center gap-2 border-b border-slate-100 pb-3 mb-4">
                 <BookMarked className="w-5 h-5 text-rose-600" />
                 <span>{t.checkEligibility}</span>
               </h3>
 
               <form onSubmit={calculateEligibility} className="space-y-4">
                 <div>
-                  <label className="block text-xs font-bold text-slate-600 uppercase mb-1">
+                  <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 uppercase mb-1">
                     {lang === "EN" ? "Select Target Course Level" : "টার্গেট কোর্সের লেভেল"}
                   </label>
                   <div className="grid grid-cols-2 gap-2">
@@ -1312,13 +1266,13 @@ export default function App() {
 
                 {eligibilityLevel === "hsc" && (
                   <div>
-                    <label className="block text-xs font-bold text-slate-600 uppercase mb-1">
+                    <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 uppercase mb-1">
                       {lang === "EN" ? "Target Academic Group" : "কাঙ্ক্ষিত গ্রুপ/শাখা"}
                     </label>
                     <select
                       value={targetGroup}
                       onChange={(e) => setTargetGroup(e.target.value)}
-                      className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-2.5 text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-rose-500"
+                      className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-2.5 text-xs text-slate-800 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-400 focus:outline-none focus:border-rose-500"
                     >
                       <option value="science">{lang === "EN" ? "Science Group (Min: 3.5)" : "বিজ্ঞান বিভাগ (ন্যূনতম: ৩.৫)"}</option>
                       <option value="humanities">{lang === "EN" ? "Humanities Group (Min: 2.5)" : "মানবিক বিভাগ (ন্যূনতম: ২.৫)"}</option>
@@ -1329,7 +1283,7 @@ export default function App() {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-bold text-slate-600 uppercase mb-1">
+                    <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 uppercase mb-1">
                       {lang === "EN" ? "Your SSC GPA (0 - 5.00)" : "আপনার এসএসসি জিপিএ"}
                     </label>
                     <input
@@ -1339,13 +1293,13 @@ export default function App() {
                       max="5.00"
                       value={sscGpaInput}
                       onChange={(e) => setSscGpaInput(e.target.value)}
-                      className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-2.5 text-xs font-mono font-bold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-rose-500"
+                      className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-2.5 text-xs font-mono font-bold text-slate-800 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-400 focus:outline-none focus:border-rose-500"
                     />
                   </div>
 
                   {eligibilityLevel === "degree" && (
                     <div>
-                      <label className="block text-xs font-bold text-slate-600 uppercase mb-1">
+                      <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 uppercase mb-1">
                         {lang === "EN" ? "Your HSC GPA (0 - 5.00)" : "আপনার এইচএসসি জিপিএ"}
                       </label>
                       <input
@@ -1355,7 +1309,7 @@ export default function App() {
                         max="5.00"
                         value={hscGpaInput}
                         onChange={(e) => setHscGpaInput(e.target.value)}
-                        className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-2.5 text-xs font-mono font-bold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-rose-500"
+                        className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-2.5 text-xs font-mono font-bold text-slate-800 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-400 focus:outline-none focus:border-rose-500"
                       />
                     </div>
                   )}
@@ -1422,7 +1376,7 @@ export default function App() {
                   <div className="flex justify-between items-center border-b border-slate-100 pb-3 mb-5">
                     <div>
                       <span className="bg-rose-100 text-rose-800 text-[10px] font-bold px-2 py-0.5 rounded">Step-by-Step</span>
-                      <h3 className="text-lg font-bold text-slate-950 mt-1">
+                      <h3 className="text-lg font-bold text-slate-950 dark:text-slate-50 mt-1">
                         {lang === "EN" ? "Apply Online - Application Form" : "অনলাইন ভর্তি আবেদন ফরম ২০২৬"}
                       </h3>
                     </div>
@@ -1435,7 +1389,7 @@ export default function App() {
 
                     {/* Select Student Avatar Avatar for application receipt */}
                     <div>
-                      <label className="block text-xs font-bold text-slate-600 uppercase mb-1">
+                      <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 uppercase mb-1">
                         {lang === "EN" ? "Select Student Avatar for Receipt" : "রশিদের জন্য ছাত্রীর প্রতিকৃতি নির্বাচন করুন"}
                       </label>
                       <div className="flex gap-4">
@@ -1463,7 +1417,7 @@ export default function App() {
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-xs font-bold text-slate-600 uppercase mb-1">
+                        <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 uppercase mb-1">
                           {lang === "EN" ? "Applicant Name *" : "ছাত্রীর পূর্ণ নাম (বাংলা/ইংরেজি) *"}
                         </label>
                         <input
@@ -1472,12 +1426,12 @@ export default function App() {
                           placeholder="e.g. Tasnim Rahman Shafina"
                           value={applicantName}
                           onChange={(e) => setApplicantName(e.target.value)}
-                          className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-2.5 text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-rose-500"
+                          className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-2.5 text-xs text-slate-800 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-400 focus:outline-none focus:border-rose-500"
                         />
                       </div>
 
                       <div>
-                        <label className="block text-xs font-bold text-slate-600 uppercase mb-1">
+                        <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 uppercase mb-1">
                           {lang === "EN" ? "Mobile Number *" : "অভিভাবক বা ছাত্রীর মোবাইল নম্বর *"}
                         </label>
                         <input
@@ -1486,14 +1440,14 @@ export default function App() {
                           placeholder="e.g. 01712XXXXXX"
                           value={applicantPhone}
                           onChange={(e) => setApplicantPhone(e.target.value)}
-                          className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-2.5 text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-rose-500"
+                          className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-2.5 text-xs text-slate-800 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-400 focus:outline-none focus:border-rose-500"
                         />
                       </div>
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-xs font-bold text-slate-600 uppercase mb-1">
+                        <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 uppercase mb-1">
                           {lang === "EN" ? "Father's Name" : "পিতার নাম"}
                         </label>
                         <input
@@ -1501,12 +1455,12 @@ export default function App() {
                           placeholder="e.g. Md. Abdur Rahman"
                           value={fatherName}
                           onChange={(e) => setFatherName(e.target.value)}
-                          className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-2.5 text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-rose-500"
+                          className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-2.5 text-xs text-slate-800 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-400 focus:outline-none focus:border-rose-500"
                         />
                       </div>
 
                       <div>
-                        <label className="block text-xs font-bold text-slate-600 uppercase mb-1">
+                        <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 uppercase mb-1">
                           {lang === "EN" ? "Mother's Name" : "মাতার নাম"}
                         </label>
                         <input
@@ -1514,14 +1468,14 @@ export default function App() {
                           placeholder="e.g. Begum Rokeya"
                           value={motherName}
                           onChange={(e) => setMotherName(e.target.value)}
-                          className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-2.5 text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-rose-500"
+                          className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-2.5 text-xs text-slate-800 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-400 focus:outline-none focus:border-rose-500"
                         />
                       </div>
                     </div>
 
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                       <div>
-                        <label className="block text-xs font-bold text-slate-600 uppercase mb-1">
+                        <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 uppercase mb-1">
                           {lang === "EN" ? "SSC Roll No *" : "এসএসসি রোল নং *"}
                         </label>
                         <input
@@ -1530,18 +1484,18 @@ export default function App() {
                           placeholder="124578"
                           value={sscRoll}
                           onChange={(e) => setSscRoll(e.target.value)}
-                          className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-2.5 text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-rose-500 font-mono"
+                          className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-2.5 text-xs text-slate-800 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-400 focus:outline-none focus:border-rose-500 font-mono"
                         />
                       </div>
 
                       <div>
-                        <label className="block text-xs font-bold text-slate-600 uppercase mb-1">
+                        <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 uppercase mb-1">
                           {lang === "EN" ? "SSC Board" : "বোর্ড"}
                         </label>
                         <select
                           value={sscBoard}
                           onChange={(e) => setSscBoard(e.target.value)}
-                          className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-2.5 text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-rose-500"
+                          className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-2.5 text-xs text-slate-800 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-400 focus:outline-none focus:border-rose-500"
                         >
                           <option value="Rajshahi">Rajshahi</option>
                           <option value="Dhaka">Dhaka</option>
@@ -1551,13 +1505,13 @@ export default function App() {
                       </div>
 
                       <div>
-                        <label className="block text-xs font-bold text-slate-600 uppercase mb-1">
+                        <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 uppercase mb-1">
                           {lang === "EN" ? "Passing Year" : "পাশের সন"}
                         </label>
                         <select
                           value={sscYear}
                           onChange={(e) => setSscYear(e.target.value)}
-                          className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-2.5 text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-rose-500"
+                          className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-2.5 text-xs text-slate-800 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-400 focus:outline-none focus:border-rose-500"
                         >
                           <option value="2025">2025</option>
                           <option value="2024">2024</option>
@@ -1566,7 +1520,7 @@ export default function App() {
                       </div>
 
                       <div>
-                        <label className="block text-xs font-bold text-slate-600 uppercase mb-1">
+                        <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 uppercase mb-1">
                           {lang === "EN" ? "SSC GPA *" : "প্রাপ্ত জিপিএ *"}
                         </label>
                         <input
@@ -1575,19 +1529,19 @@ export default function App() {
                           placeholder="e.g. 4.80"
                           value={applicantGpa}
                           onChange={(e) => setApplicantGpa(e.target.value)}
-                          className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-2.5 text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-rose-500 font-mono font-bold"
+                          className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-2.5 text-xs text-slate-800 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-400 focus:outline-none focus:border-rose-500 font-mono font-bold"
                         />
                       </div>
                     </div>
 
                     <div>
-                      <label className="block text-xs font-bold text-slate-600 uppercase mb-1">
+                      <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 uppercase mb-1">
                         {lang === "EN" ? "Preferred Course/Subject to Admit" : "ভর্তির জন্য কাঙ্ক্ষিত কোর্স বা গ্রুপ নির্বাচন করুন"}
                       </label>
                       <select
                         value={selectedProgram}
                         onChange={(e) => setSelectedProgram(e.target.value)}
-                        className="w-full bg-slate-50 dark:bg-slate-800 border-rose-200 border-2 rounded-lg p-2.5 text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-rose-500 font-semibold"
+                        className="w-full bg-slate-50 dark:bg-slate-800 border-rose-200 border-2 rounded-lg p-2.5 text-xs text-slate-800 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-400 focus:outline-none focus:border-rose-500 font-semibold"
                       >
                         <option value="HSC Science">{lang === "EN" ? "HSC - Science Group" : "এইচএসসি - বিজ্ঞান গ্রুপ"}</option>
                         <option value="HSC Humanities">{lang === "EN" ? "HSC - Humanities Group" : "এইচএসসি - মানবিক গ্রুপ"}</option>
@@ -1659,7 +1613,7 @@ export default function App() {
                         <h4 className="text-base font-extrabold text-slate-900 dark:text-slate-100 mt-1">
                           {submittedData?.applicantName}
                         </h4>
-                        <p className="text-xs text-slate-600">
+                        <p className="text-xs text-slate-600 dark:text-slate-400">
                           {lang === "EN" ? "Mobile Contact:" : "মোবাইল নাম্বার:"} <strong className="font-mono text-slate-800 dark:text-slate-200">{submittedData?.applicantPhone}</strong>
                         </p>
                       </div>
@@ -1688,7 +1642,7 @@ export default function App() {
                     <div className="bg-slate-50 dark:bg-slate-800 p-3.5 rounded-xl border border-slate-200 dark:border-slate-700 flex flex-col sm:flex-row justify-between items-center gap-4">
                       <div>
                         <p className="text-[9px] text-slate-400 uppercase font-bold">{lang === "EN" ? "Official QR Code Verification" : "অফিসিয়াল কিউআর ভেরিফিকেশন"}</p>
-                        <p className="text-[10px] text-slate-600 mt-1 leading-relaxed">
+                        <p className="text-[10px] text-slate-600 dark:text-slate-400 mt-1 leading-relaxed">
                           {lang === "EN"
                             ? "Please present a printed copy of this slip in College Admin desk room 102. Bring original transcripts and 3 copies of passport photos."
                             : "দয়া করে এই রশিদটি প্রিন্ট করে মূল মার্কশিটসহ কলেজের ১০২ নম্বর কক্ষে জমা দিয়ে ভর্তি চূড়ান্ত করুন।"}
@@ -1766,8 +1720,12 @@ export default function App() {
           </div>
         </div>
       </section>
+</>
+) : null }
 
-      {/* --- EXAM RESULTS SECTION --- */}
+      { activeTab === "results" ? (
+<>
+{/* --- EXAM RESULTS SECTION --- */}
       <section id="results-section" className="py-16 bg-slate-50 dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700">
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex flex-col lg:flex-row gap-8 items-center">
@@ -1780,7 +1738,7 @@ export default function App() {
               <h2 className="text-2xl md:text-4xl font-extrabold text-slate-900 dark:text-slate-100 mb-4">
                 {t.resultSectionTitle}
               </h2>
-              <p className="text-slate-600 text-sm leading-relaxed mb-6">
+              <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed mb-6">
                 {t.resultSectionSubtitle}
               </p>
               <div className="hidden lg:flex items-center gap-4 text-xs font-semibold text-slate-500">
@@ -1804,7 +1762,7 @@ export default function App() {
                     <select
                       value={resultExam}
                       onChange={(e) => setResultExam(e.target.value)}
-                      className="w-full border-2 border-slate-200 dark:border-slate-700 rounded-lg px-4 py-3 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600 transition-colors"
+                      className="w-full border-2 border-slate-200 dark:border-slate-700 rounded-lg px-4 py-3 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-400 focus:outline-none focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600 transition-colors"
                     >
                       <option value="HSC_1st">Intermediate 1st Year (HSC)</option>
                       <option value="HSC_2nd">Intermediate 2nd Year (HSC)</option>
@@ -1822,7 +1780,7 @@ export default function App() {
                     <select
                       value={resultYear}
                       onChange={(e) => setResultYear(e.target.value)}
-                      className="w-full border-2 border-slate-200 dark:border-slate-700 rounded-lg px-4 py-3 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600 transition-colors"
+                      className="w-full border-2 border-slate-200 dark:border-slate-700 rounded-lg px-4 py-3 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-400 focus:outline-none focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600 transition-colors"
                     >
                       {[2023, 2022, 2021, 2020].map(yr => (
                         <option key={yr} value={yr}>{yr}</option>
@@ -1841,7 +1799,7 @@ export default function App() {
                       value={resultReg}
                       onChange={(e) => setResultReg(e.target.value)}
                       placeholder="e.g. 1928475"
-                      className="w-full border-2 border-slate-200 dark:border-slate-700 rounded-lg px-4 py-3 text-slate-900 dark:text-slate-100 focus:outline-none focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600 transition-colors placeholder:text-slate-400"
+                      className="w-full border-2 border-slate-200 dark:border-slate-700 rounded-lg px-4 py-3 text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-400 focus:outline-none focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600 transition-colors placeholder:text-slate-400"
                     />
                   </div>
 
@@ -1856,7 +1814,7 @@ export default function App() {
                       value={resultRoll}
                       onChange={(e) => setResultRoll(e.target.value)}
                       placeholder="e.g. 83749"
-                      className="w-full border-2 border-slate-200 dark:border-slate-700 rounded-lg px-4 py-3 text-slate-900 dark:text-slate-100 focus:outline-none focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600 transition-colors placeholder:text-slate-400"
+                      className="w-full border-2 border-slate-200 dark:border-slate-700 rounded-lg px-4 py-3 text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-400 focus:outline-none focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600 transition-colors placeholder:text-slate-400"
                     />
                   </div>
 
@@ -1904,8 +1862,12 @@ export default function App() {
           </div>
         </div>
       </section>
+</>
+) : null }
 
-      {/* --- NOTICE BOARD SECTION --- */}
+      { activeTab === "notices" ? (
+<>
+{/* --- NOTICE BOARD SECTION --- */}
       <section id="notices-section" className="py-16 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-700">
         <div className="max-w-7xl mx-auto px-4">
 
@@ -1914,7 +1876,7 @@ export default function App() {
               <span className="text-xs font-bold uppercase tracking-wider text-rose-600 block">
                 {lang === "EN" ? "HJSWC NOTICE BOARD" : "হাজী জমির উদ্দীন শাফিনা কলেজ নোটিশ বোর্ড"}
               </span>
-              <h2 className="text-2xl md:text-4.5xl font-extrabold text-slate-950 mt-1">
+              <h2 className="text-2xl md:text-4.5xl font-extrabold text-slate-950 dark:text-slate-50 mt-1">
                 {t.navNotices}
               </h2>
             </div>
@@ -1953,7 +1915,7 @@ export default function App() {
                 placeholder={lang === "EN" ? "Search notice title..." : "নোটিশের শব্দ দিয়ে খুঁজুন..."}
                 value={searchNotice}
                 onChange={(e) => setSearchNotice(e.target.value)}
-                className="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg pl-9 pr-4 py-2 text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-rose-500"
+                className="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg pl-9 pr-4 py-2 text-xs text-slate-800 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-400 focus:outline-none focus:border-rose-500"
               />
               <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
             </div>
@@ -2107,8 +2069,12 @@ export default function App() {
 
         </div>
       </section>
+</>
+) : null }
 
-      {/* --- CAMPUS LIFE / FACILITIES SECTION --- */}
+      { activeTab === "campus-map" ? (
+<>
+{/* --- CAMPUS LIFE / FACILITIES SECTION --- */}
       <section className="py-16 bg-slate-50 dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700">
         <div className="max-w-7xl mx-auto px-4">
 
@@ -2143,7 +2109,7 @@ export default function App() {
                     <h3 className="font-extrabold text-base text-slate-900 dark:text-slate-100 mb-2">
                       {lang === "EN" ? fac.titleEN : fac.titleBN}
                     </h3>
-                    <p className="text-xs text-slate-600 leading-relaxed font-light">
+                    <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed font-light">
                       {lang === "EN" ? fac.descEN : fac.descBN}
                     </p>
                   </div>
@@ -2164,8 +2130,12 @@ export default function App() {
 
         </div>
       </section>
+</>
+) : null }
 
-      {/* --- INTERACTIVE VIRTUAL CAMPUS MAP --- */}
+      { activeTab === "campus-map" ? (
+<>
+{/* --- INTERACTIVE VIRTUAL CAMPUS MAP --- */}
       <section id="campus-map-section" className="py-16 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-700">
         <div className="max-w-7xl mx-auto px-4">
 
@@ -2236,7 +2206,7 @@ export default function App() {
 
                         <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full uppercase ${isSelected
                             ? "bg-rose-600 text-white"
-                            : "bg-slate-100 dark:bg-slate-800 text-slate-600"
+                            : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400"
                           }`}>
                           {isSelected ? (lang === "EN" ? "Viewing Now" : "বর্তমানে নির্বাচিত") : (lang === "EN" ? "Click to Explore" : "দেখুন")}
                         </span>
@@ -2329,7 +2299,7 @@ export default function App() {
                       <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider">
                         {lang === "EN" ? "Functional Purpose & Roles:" : "কার্যক্রম ও বৈশিষ্ট্য:"}
                       </h4>
-                      <p className="text-xs text-slate-600 leading-relaxed font-light bg-slate-50 dark:bg-slate-800 p-4 rounded-xl border border-slate-100">
+                      <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed font-light bg-slate-50 dark:bg-slate-800 p-4 rounded-xl border border-slate-100">
                         {lang === "EN" ? currentSpot.detailsEN : currentSpot.detailsBN}
                       </p>
                     </div>
@@ -2349,8 +2319,12 @@ export default function App() {
 
         </div>
       </section>
+</>
+) : null }
 
-      {/* --- PHOTO GALLERY SECTION --- */}
+      { activeTab === "gallery" ? (
+<>
+{/* --- PHOTO GALLERY SECTION --- */}
       <section id="gallery-section" className="py-16 bg-slate-50 dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700">
         <div className="max-w-7xl mx-auto px-4">
 
@@ -2422,8 +2396,12 @@ export default function App() {
 
         </div>
       </section>
+</>
+) : null }
 
-      {/* --- AUTOMATED HELP DESK CHAT INTERFACE & FAQ SECTION --- */}
+      { activeTab === "contact" ? (
+<>
+{/* --- AUTOMATED HELP DESK CHAT INTERFACE & FAQ SECTION --- */}
       <section className="py-16 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-700">
         <div className="max-w-7xl mx-auto px-4">
 
@@ -2472,7 +2450,7 @@ export default function App() {
                       <HelpCircle className="w-5 h-5 text-indigo-600 shrink-0 mt-0.5" />
                       <span>{lang === "EN" ? faq.qEN : faq.qBN}</span>
                     </h4>
-                    <p className="text-xs sm:text-sm text-slate-600 mt-2 pl-7 font-light leading-relaxed">
+                    <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-2 pl-7 font-light leading-relaxed">
                       {lang === "EN" ? faq.aEN : faq.aBN}
                     </p>
                   </div>
@@ -2537,7 +2515,7 @@ export default function App() {
                     placeholder={lang === "EN" ? "Type keyword (admission, location, hostel, free, phone)..." : "ভর্তি, ঠিকানা, হোস্টেল বা উপবৃত্তি লিখে এন্টার চাপুন..."}
                     value={chatInput}
                     onChange={(e) => setChatInput(e.target.value)}
-                    className="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-xs text-slate-100 focus:outline-none focus:border-rose-500 placeholder-slate-500"
+                    className="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-xs text-slate-100 placeholder-slate-400 dark:placeholder-slate-400 focus:outline-none focus:border-rose-500 placeholder-slate-500"
                   />
                   <button
                     type="submit"
@@ -2571,8 +2549,12 @@ export default function App() {
 
         </div>
       </section>
+</>
+) : null }
 
-      {/* --- CONTACT US & DIRECT QUERY FEEDBACK --- */}
+      { activeTab === "contact" ? (
+<>
+{/* --- CONTACT US & DIRECT QUERY FEEDBACK --- */}
       <section id="contact-section" className="py-16 bg-slate-50 dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700">
         <div className="max-w-7xl mx-auto px-4">
 
@@ -2714,7 +2696,7 @@ export default function App() {
               <form onSubmit={handleContactSubmit} className="space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-bold text-slate-600 uppercase mb-1">
+                    <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 uppercase mb-1">
                       {lang === "EN" ? "Your Name *" : "আপনার নাম *"}
                     </label>
                     <input
@@ -2723,12 +2705,12 @@ export default function App() {
                       placeholder="e.g. Sharmin Akter"
                       value={contactName}
                       onChange={(e) => setContactName(e.target.value)}
-                      className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-2.5 text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-rose-500"
+                      className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-2.5 text-xs text-slate-800 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-400 focus:outline-none focus:border-rose-500"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-slate-600 uppercase mb-1">
+                    <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 uppercase mb-1">
                       {lang === "EN" ? "Email Address (Optional)" : "ইমেইল এড্রেস (ঐচ্ছিক)"}
                     </label>
                     <input
@@ -2736,13 +2718,13 @@ export default function App() {
                       placeholder="e.g. sharmin@example.com"
                       value={contactEmail}
                       onChange={(e) => setContactEmail(e.target.value)}
-                      className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-2.5 text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-rose-500"
+                      className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-2.5 text-xs text-slate-800 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-400 focus:outline-none focus:border-rose-500"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-600 uppercase mb-1">
+                  <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 uppercase mb-1">
                     {lang === "EN" ? "Your Detailed Message / Question *" : "জিজ্ঞাসা বা বার্তার বিবরণ *"}
                   </label>
                   <textarea
@@ -2751,7 +2733,7 @@ export default function App() {
                     placeholder={lang === "EN" ? "Please detail your admission or course query here..." : "আপনার ভর্তি বা অন্যান্য কাঙ্ক্ষিত প্রশ্নটি বিস্তারিতভাবে লিখুন..."}
                     value={contactMessage}
                     onChange={(e) => setContactMessage(e.target.value)}
-                    className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-2.5 text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-rose-500"
+                    className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-2.5 text-xs text-slate-800 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-400 focus:outline-none focus:border-rose-500"
                   ></textarea>
                 </div>
 
@@ -2777,7 +2759,7 @@ export default function App() {
                           <strong className="text-slate-800 dark:text-slate-200">{query.name}</strong>
                           <span className="text-slate-400 font-mono">{query.date}</span>
                         </div>
-                        <p className="text-xs text-slate-600 leading-relaxed">
+                        <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
                           {query.msg}
                         </p>
                         <div className="mt-2 text-[10px] text-rose-700 font-bold flex items-center gap-1.5">
@@ -2796,6 +2778,8 @@ export default function App() {
 
         </div>
       </section>
+</>
+) : null }
 
       {/* --- FOOTER DESK --- */}
       <footer className="bg-slate-950 text-slate-300 border-t border-rose-950 pt-16 pb-8">
@@ -2871,7 +2855,7 @@ export default function App() {
                     <button
                       onClick={() => {
                         setActiveTab(item.id);
-                        document.getElementById(`${item.id}-section`)?.scrollIntoView({ behavior: "smooth" });
+                        window.scrollTo({ top: 0, behavior: "smooth" });
                       }}
                       className="text-slate-400 hover:text-rose-400 transition-colors cursor-pointer text-left flex items-center gap-1.5"
                     >
@@ -2909,7 +2893,7 @@ export default function App() {
               <h4 className="font-extrabold text-sm text-white tracking-wide mb-4 border-b border-slate-800 pb-2">
                 {lang === "EN" ? "External Portals" : "জাতীয় ও বোর্ড লিংকসমূহ"}
               </h4>
-              <ul className="space-y-2 text-xs">
+              <ul className="space-y-2 text-xs mb-6">
                 <li>
                   <a href="https://www.nubd.info" target="_blank" rel="noreferrer" className="text-slate-400 hover:text-white transition-colors block">
                     National University Online ↗
@@ -2936,6 +2920,10 @@ export default function App() {
                   </a>
                 </li>
               </ul>
+              
+              <button onClick={handleInstallClick} className="inline-block transition-transform hover:scale-105 cursor-pointer">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg" alt="Get it on Google Play" className="h-10" />
+              </button>
             </div>
 
           </div>
@@ -2947,7 +2935,7 @@ export default function App() {
                 ? "© 2026 Haji Jamir Uddin Shafina Women's Degree College. Luxmipur Vatapara, Rajpara, Rajshahi, Bangladesh. All Rights Reserved."
                 : "© ২০২৬ হাজী জমির উদ্দীন শাফিনা মহিলা ডিগ্রী কলেজ। লক্ষ্মীপুর ভাটাপাড়া, ডাকঘর: রাজশাহী জিপিও-৬০০০, রাজপাড়া, রাজশাহী, বাংলাদেশ। সর্বস্বত্ব সংরক্ষিত।"}
             </p>
-            <p className="text-[10px] text-slate-600">
+            <p className="text-[10px] text-slate-600 dark:text-slate-400">
               Developed & Maintained in affiliation with National University and BISE Rajshahi.
               Authorized by Government of People's Republic of Bangladesh. (College Code: 1029, 2567)
             </p>
@@ -2984,7 +2972,7 @@ export default function App() {
 
               {/* Fake letterhead */}
               <div className="text-center border-b border-dashed border-slate-200 dark:border-slate-700 pb-4 mb-4">
-                <h4 className="font-extrabold text-slate-950 uppercase tracking-wide text-xs">
+                <h4 className="font-extrabold text-slate-950 dark:text-slate-50 uppercase tracking-wide text-xs">
                   {t.collegeName}
                 </h4>
                 <p className="text-[10px] text-slate-500 uppercase mt-0.5">
